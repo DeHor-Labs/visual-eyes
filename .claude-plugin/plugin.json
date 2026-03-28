@@ -1,0 +1,11 @@
+{
+  "name": "visual-eyes",
+  "description": "Give Claude Code eyes to see and analyze running web applications. Visual testing, regression detection, and auto-fix.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Nikolas DeHor",
+    "url": "https://github.com/nikolasdehor"
+  },
+  "repository": "https://github.com/nikolasdehor/visual-eyes",
+  "keywords": ["visual-testing", "screenshot", "regression", "ui", "playwright", "claude-code"]
+}

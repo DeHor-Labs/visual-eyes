@@ -1,0 +1,15 @@
+{
+  "name": "visual-eyes-claude",
+  "version": "1.0.0",
+  "description": "Give Claude Code eyes - visual testing, screenshot analysis, and auto-fix for web apps",
+  "bin": {
+    "visual-eyes-install": "./install.sh"
+  },
+  "keywords": ["claude-code", "visual-testing", "playwright", "screenshot", "ai", "skill"],
+  "author": "Nikolas DeHor",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nikolasdehor/visual-eyes"
+  }
+}
