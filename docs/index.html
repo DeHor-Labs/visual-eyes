@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visual Eyes - Give Claude Code eyes to see your app</title>
-  <meta name="description" content="Screenshot, analyze, fix, verify. The visual feedback loop AI coding assistants were missing.">
-  <meta property="og:title" content="Visual Eyes - Give Claude Code eyes to see your app">
-  <meta property="og:description" content="Screenshot, analyze, fix, verify. The visual feedback loop AI coding assistants were missing.">
+  <title>Visual Eyes - Give Claude Code Eyes</title>
+  <meta name="description" content="See your app. Fix bugs visually. Ship faster. The visual feedback loop AI coding assistants were missing.">
+  <meta property="og:title" content="Visual Eyes - Give Claude Code Eyes">
+  <meta property="og:description" content="See your app. Fix bugs visually. Ship faster.">
   <meta property="og:type" content="website">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d1117;
-      --bg-card: #161b22;
-      --bg-elevated: #1c2128;
-      --border: #30363d;
-      --border-subtle: #21262d;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --text-subtle: #656d76;
+      --bg: #09090b;
+      --bg-card: rgba(255,255,255,0.03);
+      --bg-elevated: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(139,92,246,0.4);
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --text-subtle: #52525b;
       --purple: #8b5cf6;
       --purple-light: #a78bfa;
       --cyan: #06b6d4;
       --cyan-light: #22d3ee;
-      --blue: #2563eb;
-      --green: #3fb950;
+      --green: #22c55e;
+      --red: #f43f5e;
     }
 
     html { scroll-behavior: smooth; }
@@ -33,30 +33,63 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
       line-height: 1.6;
       overflow-x: hidden;
     }
 
+    /* GRID BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body > * { position: relative; z-index: 1; }
+
     .container {
-      max-width: 1100px;
+      max-width: 1120px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
-    section { padding: 72px 0; }
+    /* SCROLL ANIMATIONS */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
 
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .fade-up-delay-1 { transition-delay: 0.1s; }
+    .fade-up-delay-2 { transition-delay: 0.2s; }
+    .fade-up-delay-3 { transition-delay: 0.3s; }
+    .fade-up-delay-4 { transition-delay: 0.4s; }
+    .fade-up-delay-5 { transition-delay: 0.5s; }
+
+    /* NAV */
     nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(13, 17, 23, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(9,9,11,0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-inner {
-      max-width: 1100px;
+      max-width: 1120px;
       margin: 0 auto;
       padding: 0 24px;
       height: 60px;
@@ -72,15 +105,19 @@
       text-decoration: none;
       color: var(--text);
       font-weight: 600;
-      font-size: 16px;
+      font-size: 15px;
+      letter-spacing: -0.3px;
     }
 
-    .nav-brand svg { width: 28px; height: 28px; }
+    .nav-logo {
+      width: 28px;
+      height: 28px;
+    }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 32px;
     }
 
     .nav-links a {
@@ -92,506 +129,732 @@
 
     .nav-links a:hover { color: var(--text); }
 
-    .btn {
+    .btn-github {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
+      gap: 7px;
+      padding: 7px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 14px;
+      color: var(--text);
+      font-size: 13px;
       font-weight: 500;
       text-decoration: none;
-      cursor: pointer;
       transition: all 0.2s;
-      border: none;
     }
 
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
+    .btn-github:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.15);
     }
 
-    .btn-ghost:hover {
-      background: var(--bg-elevated);
-      color: var(--text);
+    .star-badge {
+      background: rgba(139,92,246,0.15);
+      color: var(--purple-light);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 11px;
+      font-weight: 600;
     }
 
     /* HERO */
     .hero {
-      padding: 80px 0 64px;
+      padding: 96px 0 80px;
       text-align: center;
       position: relative;
-      overflow: hidden;
     }
 
-    .hero::before {
-      content: '';
+    .hero-glow {
       position: absolute;
-      top: -200px;
+      top: -100px;
       left: 50%;
       transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(ellipse at center, rgba(139,92,246,0.12) 0%, rgba(6,182,212,0.04) 50%, transparent 70%);
       pointer-events: none;
-    }
-
-    .hero-logo {
-      width: 96px;
-      height: 96px;
-      margin: 0 auto 32px;
     }
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      background: rgba(139, 92, 246, 0.1);
-      border: 1px solid rgba(139, 92, 246, 0.25);
+      gap: 7px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.25);
       font-size: 12px;
       color: var(--purple-light);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--purple);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
     }
 
     .hero h1 {
-      font-size: clamp(40px, 6vw, 72px);
+      font-size: clamp(44px, 7vw, 80px);
       font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -1.5px;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, #e6edf3 30%, var(--purple-light) 70%, var(--cyan));
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+      animation: hero-fade-in 0.8s ease forwards;
+    }
+
+    @keyframes hero-fade-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #fafafa 20%, var(--purple-light) 55%, var(--cyan-light) 90%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      background-size: 200% 200%;
+      animation: gradient-shift 6s ease infinite;
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .hero-tagline {
-      font-size: clamp(18px, 2.5vw, 22px);
+      font-size: clamp(17px, 2.2vw, 21px);
       color: var(--text-muted);
-      margin-bottom: 48px;
-      max-width: 560px;
+      margin-bottom: 44px;
+      max-width: 520px;
       margin-left: auto;
       margin-right: auto;
+      animation: hero-fade-in 0.8s ease 0.15s both;
+      line-height: 1.55;
     }
 
-    .install-box {
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 60px;
+      flex-wrap: wrap;
+      animation: hero-fade-in 0.8s ease 0.25s both;
+    }
+
+    .btn-primary {
       display: inline-flex;
       align-items: center;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 36px;
-      max-width: 100%;
-    }
-
-    .install-cmd {
-      padding: 14px 20px;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 14px;
-      color: var(--cyan-light);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .copy-btn {
-      padding: 14px 18px;
-      background: var(--bg-elevated);
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--purple), #7c3aed);
       border: none;
-      border-left: 1px solid var(--border);
-      color: var(--text-muted);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(139,92,246,0.35); }
+    .btn-primary:hover::before { opacity: 1; }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text);
+      background: var(--bg-elevated);
+    }
+
+    /* TERMINAL */
+    .terminal-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      animation: hero-fade-in 0.8s ease 0.35s both;
+    }
+
+    .terminal {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    .terminal-glow {
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03), 0 0 60px rgba(139,92,246,0.06);
+      animation: terminal-shimmer 4s ease infinite;
+    }
+
+    @keyframes terminal-shimmer {
+      0%, 100% { box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03), 0 0 60px rgba(139,92,246,0.06); }
+      50% { box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03), 0 0 80px rgba(6,182,212,0.1); }
+    }
+
+    .terminal-header {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-body {
+      padding: 20px 22px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       font-size: 13px;
-      white-space: nowrap;
+      line-height: 1.7;
+      min-height: 180px;
     }
 
-    .copy-btn:hover {
-      background: rgba(139, 92, 246, 0.1);
-      color: var(--purple-light);
-    }
-
-    .copy-btn.copied { color: var(--green); }
-
-    .hero-actions {
+    .term-line {
       display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+      opacity: 0;
     }
 
-    /* PROBLEM */
-    .problem-section {
-      background: var(--bg-card);
-      border-top: 1px solid var(--border-subtle);
-      border-bottom: 1px solid var(--border-subtle);
+    .term-line.visible { opacity: 1; }
+
+    .term-prompt { color: var(--purple-light); user-select: none; }
+    .term-cmd { color: var(--text); }
+    .term-info { color: var(--text-muted); padding-left: 16px; }
+    .term-success { color: var(--green); padding-left: 16px; }
+    .term-dim { color: var(--text-subtle); padding-left: 16px; }
+
+    .term-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 14px;
+      background: var(--purple-light);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+      margin-left: 2px;
+      border-radius: 1px;
     }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* SECTIONS */
+    section { padding: 80px 0; }
 
     .section-label {
       font-size: 12px;
       font-weight: 600;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--purple);
-      margin-bottom: 12px;
+      color: var(--purple-light);
+      margin-bottom: 14px;
     }
 
     .section-title {
-      font-size: clamp(28px, 4vw, 40px);
+      font-size: clamp(28px, 4vw, 44px);
       font-weight: 700;
-      letter-spacing: -0.5px;
-      line-height: 1.2;
+      letter-spacing: -1px;
+      line-height: 1.15;
       margin-bottom: 16px;
     }
 
-    .section-subtitle {
+    .section-sub {
       font-size: 17px;
       color: var(--text-muted);
-      max-width: 560px;
-      margin-bottom: 56px;
+      max-width: 520px;
     }
 
-    .comparison-grid {
+    /* BEFORE/AFTER */
+    .before-after {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
+      margin-top: 56px;
     }
 
-    .comparison-card {
-      border-radius: 12px;
-      padding: 28px;
+    @media (max-width: 640px) { .before-after { grid-template-columns: 1fr; } }
+
+    .ba-card {
+      padding: 32px;
+      border-radius: 16px;
       border: 1px solid var(--border);
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
     }
 
-    .comparison-card.before {
-      background: rgba(248, 81, 73, 0.04);
-      border-color: rgba(248, 81, 73, 0.15);
-    }
+    .ba-card.before { border-color: rgba(244,63,94,0.2); }
+    .ba-card.after { border-color: rgba(34,197,94,0.2); }
 
-    .comparison-card.after {
-      background: rgba(63, 185, 80, 0.04);
-      border-color: rgba(63, 185, 80, 0.15);
-    }
-
-    .comparison-label {
+    .ba-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-size: 11px;
       font-weight: 700;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 16px;
-    }
-
-    .before .comparison-label { color: #f85149; }
-    .after .comparison-label { color: var(--green); }
-
-    .comparison-title {
-      font-size: 20px;
-      font-weight: 600;
       margin-bottom: 20px;
-      line-height: 1.3;
+      padding: 4px 10px;
+      border-radius: 6px;
     }
 
-    .comparison-items {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .ba-card.before .ba-label { color: var(--red); background: rgba(244,63,94,0.1); }
+    .ba-card.after .ba-label { color: var(--green); background: rgba(34,197,94,0.1); }
 
-    .comparison-items li {
+    .ba-item {
       display: flex;
+      align-items: flex-start;
       gap: 10px;
+      margin-bottom: 14px;
       font-size: 14px;
       color: var(--text-muted);
-      align-items: flex-start;
     }
 
-    .comparison-items li .item-icon {
-      flex-shrink: 0;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      margin-top: 1px;
-    }
+    .ba-card.before .ba-item { opacity: 0.5; text-decoration: line-through; }
+    .ba-card.after .ba-item { color: var(--text); }
 
-    .before .item-icon {
-      background: rgba(248, 81, 73, 0.15);
-      color: #f85149;
-    }
-
-    .after .item-icon {
-      background: rgba(63, 185, 80, 0.15);
-      color: var(--green);
-    }
+    .ba-icon { flex-shrink: 0; margin-top: 2px; }
 
     /* HOW IT WORKS */
-    .flow-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      max-width: 680px;
-      margin: 0 auto;
+    .steps-container {
+      margin-top: 56px;
       position: relative;
     }
 
-    .flow-steps::before {
-      content: '';
+    .steps-line {
       position: absolute;
-      left: 24px;
-      top: 48px;
-      bottom: 48px;
-      width: 1px;
-      background: linear-gradient(to bottom, var(--purple), var(--cyan));
+      top: 40px;
+      left: calc(12.5% + 16px);
+      right: calc(12.5% + 16px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
       opacity: 0.3;
     }
 
-    .flow-step {
+    @media (max-width: 768px) { .steps-line { display: none; } }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+    }
+
+    @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .steps-grid { grid-template-columns: 1fr; } }
+
+    .step {
       display: flex;
-      gap: 20px;
-      padding: 20px 0;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
 
     .step-num {
-      flex-shrink: 0;
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      background: var(--bg-elevated);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 20px;
+      margin-bottom: 20px;
       position: relative;
       z-index: 1;
+      transition: all 0.3s;
     }
 
-    .flow-step:nth-child(1) .step-num { border-color: var(--purple); color: var(--purple); }
-    .flow-step:nth-child(2) .step-num { border-color: #7c6af6; color: #7c6af6; }
-    .flow-step:nth-child(3) .step-num { border-color: #4a90d9; color: #4a90d9; }
-    .flow-step:nth-child(4) .step-num { border-color: #2db5cb; color: #2db5cb; }
-    .flow-step:nth-child(5) .step-num { border-color: var(--cyan); color: var(--cyan); }
+    .step:hover .step-num {
+      border-color: var(--purple);
+      box-shadow: 0 0 20px rgba(139,92,246,0.25);
+    }
 
-    .step-content h3 {
-      font-size: 17px;
+    .step h3 {
+      font-size: 15px;
       font-weight: 600;
-      margin-bottom: 6px;
-      margin-top: 10px;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
     }
 
-    .step-content p { font-size: 14px; color: var(--text-muted); }
-
-    .step-msg {
-      display: inline-block;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-family: "SFMono-Regular", Consolas, monospace;
+    .step p {
       font-size: 13px;
       color: var(--text-muted);
-      margin-top: 8px;
-    }
-
-    .step-msg.user {
-      border-left: 3px solid var(--purple);
-      color: var(--purple-light);
+      line-height: 1.55;
     }
 
     /* FEATURES */
-    .features-bg {
-      background: var(--bg-card);
-      border-top: 1px solid var(--border-subtle);
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
     .features-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
+      margin-top: 56px;
     }
 
+    @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .features-grid { grid-template-columns: 1fr; } }
+
     .feature-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
       padding: 28px;
-      transition: border-color 0.2s, transform 0.2s;
+      border-radius: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      transition: all 0.25s;
+      cursor: default;
     }
 
     .feature-card:hover {
-      border-color: var(--purple);
-      transform: translateY(-2px);
+      transform: translateY(-4px);
+      border-color: rgba(139,92,246,0.3);
+      background: rgba(139,92,246,0.04);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(139,92,246,0.1);
     }
 
     .feature-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
+      font-size: 26px;
       margin-bottom: 16px;
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(6, 182, 212, 0.12));
-      border: 1px solid rgba(139, 92, 246, 0.2);
+      display: block;
     }
 
-    .feature-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-    .feature-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    .feature-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
 
-    /* INSTALL */
-    .install-section { text-align: center; }
+    .feature-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
 
-    .install-options {
+    /* EXAMPLES */
+    .examples-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
       margin-top: 48px;
-      text-align: left;
     }
 
-    .install-option:last-child {
-      grid-column: 1 / -1;
-    }
+    @media (max-width: 640px) { .examples-grid { grid-template-columns: 1fr; } }
 
-    .install-option {
-      background: var(--bg-card);
+    .example-block {
+      background: rgba(0,0,0,0.4);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
-    }
-
-    .install-option-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--purple);
-      margin-bottom: 12px;
-    }
-
-    .code-block {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 14px 16px;
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-      color: var(--text-muted);
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .cmd-comment { color: var(--text-subtle); }
-    .cmd-text { color: var(--cyan-light); }
-
-    /* USAGE */
-    .usage-examples {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 48px;
-    }
-
-    .usage-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
+      overflow: hidden;
       transition: border-color 0.2s;
     }
 
-    .usage-item:hover { border-color: rgba(139, 92, 246, 0.4); }
+    .example-block:hover { border-color: rgba(139,92,246,0.3); }
 
-    .usage-quote {
-      color: var(--purple);
-      font-size: 18px;
-      line-height: 1;
+    .example-block:hover .code-shimmer {
+      box-shadow: 0 0 20px rgba(139,92,246,0.1);
+    }
+
+    .code-shimmer {
+      transition: box-shadow 0.3s;
+    }
+
+    .example-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .example-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-subtle);
+    }
+
+    .example-label {
+      font-size: 11px;
+      color: var(--text-subtle);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      flex: 1;
+    }
+
+    .example-body {
+      padding: 14px 16px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+    }
+
+    .ex-prompt { color: var(--text-muted); }
+    .ex-quote { color: var(--cyan-light); }
+    .ex-result { color: var(--green); font-size: 12px; margin-top: 6px; }
+
+    .examples-full {
+      grid-column: 1 / -1;
+    }
+
+    /* INSTALL */
+    .install-section {
+      background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(6,182,212,0.03));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 56px 48px;
+      text-align: center;
+      margin-top: 56px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .install-section::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(139,92,246,0.08), transparent 70%);
+      pointer-events: none;
+    }
+
+    .install-section::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(6,182,212,0.06), transparent 70%);
+      pointer-events: none;
+    }
+
+    .install-section h2 {
+      font-size: clamp(24px, 3.5vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .install-section p {
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      font-size: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .install-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 560px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .install-method {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .install-method-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .method-label {
+      font-size: 11px;
+      color: var(--text-subtle);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .method-primary-badge {
+      font-size: 10px;
+      background: rgba(139,92,246,0.15);
+      color: var(--purple-light);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .install-cmd-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      gap: 12px;
+    }
+
+    .install-cmd {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      color: var(--cyan-light);
+      flex: 1;
+      text-align: left;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
       flex-shrink: 0;
+    }
+
+    .copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+    .copy-btn.copied {
+      background: rgba(34,197,94,0.1);
+      border-color: rgba(34,197,94,0.3);
+      color: var(--green);
+    }
+
+    .copy-check {
+      display: none;
+    }
+
+    .copy-btn.copied .copy-text { display: none; }
+    .copy-btn.copied .copy-check { display: inline; }
+
+    .install-req {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-subtle);
+      position: relative;
+      z-index: 1;
     }
 
     /* FOOTER */
     footer {
-      border-top: 1px solid var(--border-subtle);
+      border-top: 1px solid var(--border);
       padding: 40px 0;
     }
 
     .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 20px;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
     .footer-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
       font-size: 14px;
-      color: var(--text-muted);
+      font-weight: 600;
+      color: var(--text);
     }
 
-    .footer-brand svg { width: 20px; height: 20px; }
+    .footer-tagline {
+      font-size: 13px;
+      color: var(--text-subtle);
+      font-style: italic;
+    }
 
     .footer-links {
       display: flex;
-      gap: 24px;
       align-items: center;
+      gap: 20px;
     }
 
     .footer-links a {
+      font-size: 13px;
       color: var(--text-subtle);
       text-decoration: none;
-      font-size: 13px;
       transition: color 0.2s;
     }
 
     .footer-links a:hover { color: var(--text-muted); }
 
-    .footer-sub {
-      text-align: center;
-      margin-top: 24px;
-      font-size: 13px;
-      color: var(--text-subtle);
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      section { padding: 48px 0; }
-      .hero { padding: 60px 0 48px; }
-      .comparison-grid { grid-template-columns: 1fr; }
-      .features-grid { grid-template-columns: 1fr 1fr; }
-      .install-options { grid-template-columns: 1fr; }
-      .install-option:last-child { grid-column: auto; }
-      .usage-examples { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
+    /* MOBILE NAV */
+    @media (max-width: 640px) {
+      .nav-links { gap: 16px; }
+      .nav-links a:not(:last-child) { display: none; }
+      .install-section { padding: 40px 24px; }
       .footer-inner { flex-direction: column; align-items: flex-start; }
     }
 
-    @media (max-width: 480px) {
-      .features-grid { grid-template-columns: 1fr; }
-      .install-cmd { font-size: 11px; }
+    /* DIVIDER */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0;
     }
   </style>
 </head>
@@ -601,43 +864,29 @@
 <nav>
   <div class="nav-inner">
     <a href="#" class="nav-brand">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <svg class="nav-logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="url(#logo-grad)"/>
+        <ellipse cx="16" cy="16" rx="8" ry="5.5" stroke="white" stroke-width="1.8" fill="none"/>
+        <circle cx="16" cy="16" r="2.5" fill="white"/>
+        <circle cx="16" cy="16" r="1" fill="#8b5cf6"/>
         <defs>
-          <linearGradient id="bgN" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#0d0d1a"/>
-            <stop offset="100%" style="stop-color:#0f1229"/>
+          <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32">
+            <stop offset="0%" stop-color="#6d28d9"/>
+            <stop offset="100%" stop-color="#0891b2"/>
           </linearGradient>
-          <linearGradient id="eyeGN" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#7c3aed"/>
-            <stop offset="50%" style="stop-color:#2563eb"/>
-            <stop offset="100%" style="stop-color:#06b6d4"/>
-          </linearGradient>
-          <linearGradient id="irisGN" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#8b5cf6"/>
-            <stop offset="100%" style="stop-color:#0ea5e9"/>
-          </linearGradient>
-          <filter id="glN">
-            <feGaussianBlur stdDeviation="3" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
         </defs>
-        <rect width="200" height="200" rx="36" fill="url(#bgN)"/>
-        <ellipse cx="100" cy="88" rx="78" ry="48" fill="#08081e" stroke="url(#eyeGN)" stroke-width="3" filter="url(#glN)"/>
-        <circle cx="100" cy="88" r="30" fill="url(#irisGN)" filter="url(#glN)"/>
-        <circle cx="100" cy="88" r="16" fill="#030310"/>
-        <text x="92" y="93" font-family="monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&lt;</text>
-        <text x="108" y="93" font-family="monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&gt;</text>
-        <ellipse cx="86" cy="78" rx="7" ry="5" fill="white" opacity="0.45" transform="rotate(-20, 86, 78)"/>
       </svg>
       Visual Eyes
     </a>
+
     <div class="nav-links">
       <a href="#how-it-works">How it works</a>
       <a href="#features">Features</a>
       <a href="#install">Install</a>
-      <a href="https://github.com/nikolasdehor/visual-eyes" target="_blank" rel="noopener" class="btn btn-ghost" style="padding: 6px 14px; font-size: 13px;">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      <a href="https://github.com/nikolasdehor/visual-eyes" target="_blank" rel="noopener" class="btn-github">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
+        <span class="star-badge">148</span>
       </a>
     </div>
   </div>
@@ -645,310 +894,332 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-glow"></div>
   <div class="container">
-    <div class="hero-logo">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="96" height="96">
-        <defs>
-          <linearGradient id="bgLogo" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#0d0d1a"/>
-            <stop offset="100%" style="stop-color:#0f1229"/>
-          </linearGradient>
-          <linearGradient id="eyeGradLogo" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#7c3aed"/>
-            <stop offset="50%" style="stop-color:#2563eb"/>
-            <stop offset="100%" style="stop-color:#06b6d4"/>
-          </linearGradient>
-          <linearGradient id="irisGradLogo" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#8b5cf6"/>
-            <stop offset="100%" style="stop-color:#0ea5e9"/>
-          </linearGradient>
-          <filter id="glowLogo">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="outerGlow">
-            <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <clipPath id="eyeClipLogo">
-            <ellipse cx="100" cy="88" rx="78" ry="48"/>
-          </clipPath>
-        </defs>
-        <rect width="200" height="200" rx="36" fill="url(#bgLogo)"/>
-        <g opacity="0.05" stroke="#7c3aed" stroke-width="1">
-          <line x1="0" y1="40" x2="200" y2="40"/>
-          <line x1="0" y1="80" x2="200" y2="80"/>
-          <line x1="0" y1="120" x2="200" y2="120"/>
-          <line x1="0" y1="160" x2="200" y2="160"/>
-          <line x1="40" y1="0" x2="40" y2="200"/>
-          <line x1="80" y1="0" x2="80" y2="200"/>
-          <line x1="120" y1="0" x2="120" y2="200"/>
-          <line x1="160" y1="0" x2="160" y2="200"/>
-        </g>
-        <ellipse cx="100" cy="88" rx="86" ry="56" fill="none" stroke="#7c3aed" stroke-width="1" opacity="0.15" filter="url(#outerGlow)"/>
-        <ellipse cx="100" cy="88" rx="78" ry="48" fill="#08081e" stroke="url(#eyeGradLogo)" stroke-width="3" filter="url(#glowLogo)"/>
-        <ellipse cx="100" cy="88" rx="44" ry="44" fill="none" stroke="#1a1a40" stroke-width="1.5" clip-path="url(#eyeClipLogo)"/>
-        <ellipse cx="100" cy="88" rx="32" ry="32" fill="none" stroke="#1a1a40" stroke-width="1" clip-path="url(#eyeClipLogo)"/>
-        <circle cx="100" cy="88" r="30" fill="url(#irisGradLogo)" filter="url(#glowLogo)"/>
-        <circle cx="100" cy="88" r="16" fill="#030310"/>
-        <text x="92" y="93" font-family="'Courier New', monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&lt;</text>
-        <text x="108" y="93" font-family="'Courier New', monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&gt;</text>
-        <ellipse cx="86" cy="78" rx="7" ry="5" fill="white" opacity="0.45" transform="rotate(-20, 86, 78)"/>
-        <g stroke="url(#eyeGradLogo)" stroke-width="2" opacity="0.7" stroke-linecap="round">
-          <line x1="32" y1="73" x2="24" y2="64"/>
-          <line x1="52" y1="52" x2="46" y2="41"/>
-          <line x1="78" y1="42" x2="75" y2="30"/>
-          <line x1="100" y1="40" x2="100" y2="28"/>
-          <line x1="122" y1="42" x2="125" y2="30"/>
-          <line x1="148" y1="52" x2="154" y2="41"/>
-          <line x1="168" y1="73" x2="176" y2="64"/>
-        </g>
-      </svg>
-    </div>
-
     <div class="hero-badge">
-      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+      <span class="badge-dot"></span>
       Claude Code Plugin
     </div>
 
-    <h1>Give Claude Code<br>eyes to see your app</h1>
+    <h1 class="gradient-text">Give Claude Code Eyes</h1>
 
-    <p class="hero-tagline">Screenshot, analyze, fix, verify. The visual feedback loop AI coding assistants were missing.</p>
+    <p class="hero-tagline">See your app. Fix bugs visually. Ship faster.</p>
 
-    <div>
-      <div class="install-box">
-        <span class="install-cmd" id="install-cmd-text">curl -fsSL https://raw.githubusercontent.com/nikolasdehor/visual-eyes/main/install.sh | bash</span>
-        <button class="copy-btn" id="copy-btn" onclick="copyInstall()" title="Copy to clipboard">
-          <svg id="copy-icon-svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
-            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
-          </svg>
-          <span id="copy-label">Copy</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="hero-actions">
-      <a href="https://github.com/nikolasdehor/visual-eyes" target="_blank" rel="noopener" class="btn btn-ghost">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    <div class="hero-ctas">
+      <a href="#install" class="btn-primary">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm1 11.5V13H7v-1.5H5.5l2.5-3 2.5 3H9zm0-4.5V3H7v3.5H5.5l2.5 3 2.5-3H9z"/></svg>
+        Get Started
+      </a>
+      <a href="https://github.com/nikolasdehor/visual-eyes" target="_blank" rel="noopener" class="btn-outline">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
         View on GitHub
       </a>
     </div>
-  </div>
-</section>
 
-<!-- PROBLEM -->
-<section class="problem-section" id="problem">
-  <div class="container">
-    <div class="section-label">The Problem</div>
-    <h2 class="section-title">Claude Code can write incredible<br>code but can't see the result</h2>
-    <p class="section-subtitle">You describe, Claude guesses, you describe again. A frustrating loop that wastes your time.</p>
-
-    <div class="comparison-grid">
-      <div class="comparison-card before">
-        <div class="comparison-label">Before Visual Eyes</div>
-        <div class="comparison-title">Claude codes blind</div>
-        <ul class="comparison-items">
-          <li><span class="item-icon">x</span><span>You describe visual bugs in paragraphs of text</span></li>
-          <li><span class="item-icon">x</span><span>Claude guesses what's wrong and ships fixes</span></li>
-          <li><span class="item-icon">x</span><span>New fixes introduce new problems you can't see</span></li>
-          <li><span class="item-icon">x</span><span>Back-and-forth until frustration wins</span></li>
-          <li><span class="item-icon">x</span><span>Responsive layout issues discovered in production</span></li>
-        </ul>
-      </div>
-
-      <div class="comparison-card after">
-        <div class="comparison-label">With Visual Eyes</div>
-        <div class="comparison-title">Claude sees what it builds</div>
-        <ul class="comparison-items">
-          <li><span class="item-icon">v</span><span>Claude takes a screenshot and sees the actual UI</span></li>
-          <li><span class="item-icon">v</span><span>Identifies the exact problem without guessing</span></li>
-          <li><span class="item-icon">v</span><span>Takes a new screenshot to verify the fix worked</span></li>
-          <li><span class="item-icon">v</span><span>One loop: capture, analyze, fix, verify</span></li>
-          <li><span class="item-icon">v</span><span>Tests desktop, tablet, and mobile side by side</span></li>
-        </ul>
+    <div class="terminal-wrap fade-up">
+      <div class="terminal terminal-glow code-shimmer">
+        <div class="terminal-header">
+          <div class="terminal-dot" style="background:#ef4444"></div>
+          <div class="terminal-dot" style="background:#f59e0b"></div>
+          <div class="terminal-dot" style="background:#22c55e"></div>
+          <span style="margin-left:8px;font-size:12px;color:var(--text-subtle);font-family:monospace">Claude Code - Visual Eyes</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+          <!-- Lines injected by JS -->
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<div class="section-divider"></div>
+
+<!-- PROBLEM / SOLUTION -->
+<section id="problem">
+  <div class="container">
+    <div class="fade-up">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-title">Stop describing what you see.<br>Show it.</h2>
+      <p class="section-sub">AI coding assistants are blind. They write code without ever seeing if it looks right - until now.</p>
+    </div>
+
+    <div class="before-after">
+      <div class="ba-card before fade-up fade-up-delay-1">
+        <div class="ba-label">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z"/><path d="M4.646 4.646a.5.5 0 01.708 0L8 7.293l2.646-2.647a.5.5 0 01.708.708L8.707 8l2.647 2.646a.5.5 0 01-.708.708L8 8.707l-2.646 2.647a.5.5 0 01-.708-.708L7.293 8 4.646 5.354a.5.5 0 010-.708z"/></svg>
+          Before
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 01.708 0L8 7.293l2.646-2.647a.5.5 0 01.708.708L8.707 8l2.647 2.646a.5.5 0 01-.708.708L8 8.707l-2.646 2.647a.5.5 0 01-.708-.708L7.293 8 4.646 5.354a.5.5 0 010-.708z"/></svg>
+          </span>
+          Describe bugs in plain words
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 01.708 0L8 7.293l2.646-2.647a.5.5 0 01.708.708L8.707 8l2.647 2.646a.5.5 0 01-.708.708L8 8.707l-2.646 2.647a.5.5 0 01-.708-.708L7.293 8 4.646 5.354a.5.5 0 010-.708z"/></svg>
+          </span>
+          Manual copy-paste back and forth
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 01.708 0L8 7.293l2.646-2.647a.5.5 0 01.708.708L8.707 8l2.647 2.646a.5.5 0 01-.708.708L8 8.707l-2.646 2.647a.5.5 0 01-.708-.708L7.293 8 4.646 5.354a.5.5 0 010-.708z"/></svg>
+          </span>
+          Resize browser window yourself
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 01.708 0L8 7.293l2.646-2.647a.5.5 0 01.708.708L8.707 8l2.647 2.646a.5.5 0 01-.708.708L8 8.707l-2.646 2.647a.5.5 0 01-.708-.708L7.293 8 4.646 5.354a.5.5 0 010-.708z"/></svg>
+          </span>
+          Hope Claude imagines it correctly
+        </div>
+      </div>
+
+      <div class="ba-card after fade-up fade-up-delay-2">
+        <div class="ba-label">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z"/><path d="M10.97 4.97a.235.235 0 00-.02.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-1.071-1.05z"/></svg>
+          After
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon" style="color:var(--green)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M10.97 4.97a.235.235 0 00-.02.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-1.071-1.05z"/></svg>
+          </span>
+          Claude sees your actual app
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon" style="color:var(--green)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M10.97 4.97a.235.235 0 00-.02.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-1.071-1.05z"/></svg>
+          </span>
+          Automatic fix, capture, verify loop
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon" style="color:var(--green)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M10.97 4.97a.235.235 0 00-.02.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-1.071-1.05z"/></svg>
+          </span>
+          Multi-viewport testing at once
+        </div>
+        <div class="ba-item">
+          <span class="ba-icon" style="color:var(--green)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M10.97 4.97a.235.235 0 00-.02.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-1.071-1.05z"/></svg>
+          </span>
+          Pixel-accurate regression diffs
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
 
 <!-- HOW IT WORKS -->
 <section id="how-it-works">
   <div class="container">
-    <div style="text-align: center; margin-bottom: 56px;">
+    <div class="fade-up" style="text-align:center">
       <div class="section-label">How it works</div>
-      <h2 class="section-title">Five steps, zero friction</h2>
-      <p class="section-subtitle" style="margin: 0 auto;">Just talk to Claude naturally. Visual Eyes activates automatically and handles the rest.</p>
+      <h2 class="section-title">Four steps. Zero friction.</h2>
+      <p class="section-sub" style="margin:0 auto">Claude Code captures, analyzes, fixes, and verifies - all without leaving the chat.</p>
     </div>
 
-    <div class="flow-steps">
-      <div class="flow-step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h3>You ask Claude about your UI</h3>
-          <p>No special syntax. Just speak naturally in any language.</p>
-          <div class="step-msg user">"how does the dashboard look?"</div>
+    <div class="steps-container fade-up fade-up-delay-1">
+      <div class="steps-line"></div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-num">&#128247;</div>
+          <h3>Capture</h3>
+          <p>Playwright takes a screenshot of your localhost app at any viewport size</p>
         </div>
-      </div>
-
-      <div class="flow-step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h3>Visual Eyes captures a screenshot</h3>
-          <p>Playwright opens your localhost app and takes a full-quality screenshot. Desktop, mobile, or full-page.</p>
-          <div class="step-msg">Capturing localhost:3000...</div>
+        <div class="step">
+          <div class="step-num">&#128270;</div>
+          <h3>Analyze</h3>
+          <p>Claude sees the image - layout, colors, spacing, broken elements</p>
         </div>
-      </div>
-
-      <div class="flow-step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h3>Claude sees and analyzes the UI</h3>
-          <p>Claude's multimodal vision reads the actual screenshot - layout, colors, typography, spacing, overflow. Everything a developer's eye catches.</p>
-          <div class="step-msg">"Broken grid, misaligned header, text overflow at 320px"</div>
+        <div class="step">
+          <div class="step-num">&#9889;</div>
+          <h3>Fix</h3>
+          <p>Claude edits the code with a clear visual target in mind</p>
         </div>
-      </div>
-
-      <div class="flow-step">
-        <div class="step-num">4</div>
-        <div class="step-content">
-          <h3>Claude fixes the bugs automatically</h3>
-          <p>No descriptions needed. Claude edits your code directly, based on what it actually saw.</p>
-        </div>
-      </div>
-
-      <div class="flow-step">
-        <div class="step-num">5</div>
-        <div class="step-content">
-          <h3>New screenshot verifies the fix</h3>
-          <p>Claude takes a second screenshot and confirms the fix worked before reporting back. No more "I think it's fixed."</p>
-          <div class="step-msg">"Fixed. Header realigned. Want to check mobile?"</div>
+        <div class="step">
+          <div class="step-num">&#10003;</div>
+          <h3>Verify</h3>
+          <p>Another screenshot confirms the fix looks right before moving on</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
+<div class="section-divider"></div>
+
 <!-- FEATURES -->
-<section class="features-bg" id="features">
+<section id="features">
   <div class="container">
-    <div style="text-align: center; margin-bottom: 56px;">
+    <div class="fade-up">
       <div class="section-label">Features</div>
-      <h2 class="section-title">Everything visual, nothing to configure</h2>
+      <h2 class="section-title">Everything visual debugging needs</h2>
+      <p class="section-sub">Built specifically for Claude Code. Zero config, maximum power.</p>
     </div>
 
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">&#128247;</div>
+      <div class="feature-card fade-up fade-up-delay-1">
+        <span class="feature-icon">&#128247;</span>
         <h3>Screenshot Capture</h3>
-        <p>Desktop, mobile (iPhone, Android presets), full-page scroll capture, or specific routes. Any viewport, any resolution.</p>
+        <p>Desktop, mobile, full-page, and element-level screenshots via Playwright</p>
       </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">&#128065;</div>
+      <div class="feature-card fade-up fade-up-delay-2">
+        <span class="feature-icon">&#128064;</span>
         <h3>Visual Analysis</h3>
-        <p>Claude reads the actual screenshot with multimodal vision. Layout, colors, typography, spacing - no more guessing from text descriptions.</p>
+        <p>Claude sees layout, colors, spacing, and broken elements exactly as users do</p>
       </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">&#128260;</div>
+      <div class="feature-card fade-up fade-up-delay-3">
+        <span class="feature-icon">&#128260;</span>
         <h3>Auto-Fix Loop</h3>
-        <p>Identify bug, edit code, screenshot, verify, repeat. Claude runs the loop autonomously until the visual matches your intent.</p>
+        <p>Capture, analyze, fix, and verify - repeated automatically until the UI is correct</p>
       </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">&#128270;</div>
-        <h3>Visual Regression</h3>
-        <p>Before and after pixel-level diff with highlighted changes. Red pixels show exactly what moved or changed between two states.</p>
+      <div class="feature-card fade-up fade-up-delay-1">
+        <span class="feature-icon">&#128203;</span>
+        <h3>Regression Testing</h3>
+        <p>Pixel-level before/after diffs catch visual regressions before they reach prod</p>
       </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">&#128241;</div>
+      <div class="feature-card fade-up fade-up-delay-2">
+        <span class="feature-icon">&#128241;</span>
         <h3>Responsive Testing</h3>
-        <p>Desktop, tablet, and mobile viewports side by side in one command. Catch responsive layout bugs before they reach production.</p>
+        <p>Test multiple viewports side by side - mobile, tablet, and desktop at once</p>
       </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">&#9889;</div>
+      <div class="feature-card fade-up fade-up-delay-3">
+        <span class="feature-icon">&#9889;</span>
         <h3>Zero Config</h3>
-        <p>Works with any localhost app - React, Next.js, Vue, Svelte, plain HTML. No API keys, no config files, no setup wizard.</p>
+        <p>Works with any localhost app. No config files, no setup, no build changes</p>
       </div>
     </div>
   </div>
 </section>
+
+<div class="section-divider"></div>
+
+<!-- EXAMPLES -->
+<section id="examples">
+  <div class="container">
+    <div class="fade-up" style="text-align:center">
+      <div class="section-label">Usage Examples</div>
+      <h2 class="section-title">Just describe what you want</h2>
+      <p class="section-sub" style="margin:0 auto">Natural language prompts. Visual Eyes handles the rest.</p>
+    </div>
+
+    <div class="examples-grid fade-up fade-up-delay-1">
+      <div class="example-block code-shimmer">
+        <div class="example-header">
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <span class="example-label">prompt</span>
+        </div>
+        <div class="example-body">
+          <div class="ex-prompt">You: <span class="ex-quote">"screenshot the homepage"</span></div>
+          <div class="ex-result">&#x2714; Captured localhost:3000 (1280x720)</div>
+        </div>
+      </div>
+
+      <div class="example-block code-shimmer">
+        <div class="example-header">
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <span class="example-label">prompt</span>
+        </div>
+        <div class="example-body">
+          <div class="ex-prompt">You: <span class="ex-quote">"there's a visual bug on settings page"</span></div>
+          <div class="ex-result">&#x2714; Found 2 issues, fixing...</div>
+        </div>
+      </div>
+
+      <div class="example-block code-shimmer">
+        <div class="example-header">
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <span class="example-label">prompt</span>
+        </div>
+        <div class="example-body">
+          <div class="ex-prompt">You: <span class="ex-quote">"compare before and after my CSS changes"</span></div>
+          <div class="ex-result">&#x2714; Diff generated - 3 regions changed</div>
+        </div>
+      </div>
+
+      <div class="example-block code-shimmer">
+        <div class="example-header">
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <span class="example-label">prompt</span>
+        </div>
+        <div class="example-body">
+          <div class="ex-prompt">You: <span class="ex-quote">"check the dashboard on mobile"</span></div>
+          <div class="ex-result">&#x2714; Tested 375x812, 390x844, 428x926</div>
+        </div>
+      </div>
+
+      <div class="example-block examples-full code-shimmer">
+        <div class="example-header">
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <div class="example-dot"></div>
+          <span class="example-label">prompt</span>
+        </div>
+        <div class="example-body">
+          <div class="ex-prompt">You: <span class="ex-quote">"scan all routes for visual regressions"</span></div>
+          <div class="ex-result">&#x2714; Scanned 12 routes - 1 regression found on /profile, fixing...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
 
 <!-- INSTALL -->
-<section class="install-section" id="install">
+<section id="install">
   <div class="container">
-    <div class="section-label">Install</div>
-    <h2 class="section-title">One command, then restart</h2>
-    <p class="section-subtitle" style="margin: 0 auto;">After installing, restart Claude Code and just talk naturally - it works immediately.</p>
+    <div class="fade-up">
+      <div class="install-section">
+        <h2>Start in 30 seconds</h2>
+        <p>Works with any localhost app. Playwright installs automatically.</p>
 
-    <div class="install-options">
-      <div class="install-option">
-        <div class="install-option-label">Recommended</div>
-        <div class="code-block"><span class="cmd-comment"># One-liner install
-</span><span class="cmd-text">curl -fsSL https://raw.githubusercontent.com/nikolasdehor/visual-eyes/main/install.sh | bash</span></div>
-      </div>
+        <div class="install-methods">
+          <div class="install-method">
+            <div class="install-method-header">
+              <span class="method-label">Recommended</span>
+              <span class="method-primary-badge">Primary</span>
+            </div>
+            <div class="install-cmd-row">
+              <span class="install-cmd">curl -fsSL https://visual-eyes.dev/install.sh | sh</span>
+              <button class="copy-btn" onclick="copyCmd(this, 'curl -fsSL https://visual-eyes.dev/install.sh | sh')">
+                <span class="copy-text">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5H3a2 2 0 00-2 2V14a2 2 0 002 2h10a2 2 0 002-2V3.5a2 2 0 00-2-2h-1v1h1a1 1 0 011 1V14a1 1 0 01-1 1H3a1 1 0 01-1-1V3.5a1 1 0 011-1h1v-1z"/><path d="M9.5 1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5v-1a.5.5 0 01.5-.5h3zm-3-1A1.5 1.5 0 005 1.5v1A1.5 1.5 0 006.5 4h3A1.5 1.5 0 0011 2.5v-1A1.5 1.5 0 009.5 0h-3z"/></svg>
+                  Copy
+                </span>
+                <span class="copy-check">&#x2714; Copied</span>
+              </button>
+            </div>
+          </div>
 
-      <div class="install-option">
-        <div class="install-option-label">Claude Code Plugin</div>
-        <div class="code-block"><span class="cmd-comment"># Via Claude Code plugin system
-</span><span class="cmd-text">claude plugins install github:nikolasdehor/visual-eyes</span></div>
-      </div>
+          <div class="install-method">
+            <div class="install-method-header">
+              <span class="method-label">Claude Code Plugin</span>
+            </div>
+            <div class="install-cmd-row">
+              <span class="install-cmd">claude plugins install visual-eyes</span>
+              <button class="copy-btn" onclick="copyCmd(this, 'claude plugins install visual-eyes')">
+                <span class="copy-text">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5H3a2 2 0 00-2 2V14a2 2 0 002 2h10a2 2 0 002-2V3.5a2 2 0 00-2-2h-1v1h1a1 1 0 011 1V14a1 1 0 01-1 1H3a1 1 0 01-1-1V3.5a1 1 0 011-1h1v-1z"/><path d="M9.5 1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5v-1a.5.5 0 01.5-.5h3zm-3-1A1.5 1.5 0 005 1.5v1A1.5 1.5 0 006.5 4h3A1.5 1.5 0 0011 2.5v-1A1.5 1.5 0 009.5 0h-3z"/></svg>
+                  Copy
+                </span>
+                <span class="copy-check">&#x2714; Copied</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-      <div class="install-option">
-        <div class="install-option-label">Manual (Git)</div>
-        <div class="code-block"><span class="cmd-text">git clone https://github.com/nikolasdehor/visual-eyes.git
-cp -r visual-eyes/skills/visual-eyes ~/.claude/skills/</span></div>
-      </div>
-    </div>
-
-    <p style="margin-top: 24px; font-size: 13px; color: var(--text-subtle);">
-      Requires Node.js 18+ and Claude Code (any plan). Playwright browsers install automatically on first run.
-    </p>
-  </div>
-</section>
-
-<!-- USAGE EXAMPLES -->
-<section style="background: var(--bg-card); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
-  <div class="container">
-    <div style="text-align: center;">
-      <div class="section-label">Usage</div>
-      <h2 class="section-title">Just talk naturally</h2>
-      <p class="section-subtitle" style="margin: 0 auto;">The skill activates automatically. No commands to memorize.</p>
-    </div>
-
-    <div class="usage-examples">
-      <div class="usage-item">
-        <span class="usage-quote">"</span>
-        <span>screenshot the homepage</span>
-      </div>
-      <div class="usage-item">
-        <span class="usage-quote">"</span>
-        <span>how does the dashboard look on mobile?</span>
-      </div>
-      <div class="usage-item">
-        <span class="usage-quote">"</span>
-        <span>there's a visual bug, find and fix it</span>
-      </div>
-      <div class="usage-item">
-        <span class="usage-quote">"</span>
-        <span>compare before and after my changes</span>
-      </div>
-      <div class="usage-item">
-        <span class="usage-quote">"</span>
-        <span>show me desktop, tablet, and mobile side by side</span>
-      </div>
-      <div class="usage-item">
-        <span class="usage-quote">"</span>
-        <span>check all routes for visual regressions</span>
+        <div class="install-req">Requires Node.js 18+ - Playwright installs automatically on first use</div>
       </div>
     </div>
   </div>
@@ -956,66 +1227,100 @@ cp -r visual-eyes/skills/visual-eyes ~/.claude/skills/</span></div>
 
 <!-- FOOTER -->
 <footer>
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-          <defs>
-            <linearGradient id="bgF" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#0d0d1a"/>
-              <stop offset="100%" style="stop-color:#0f1229"/>
-            </linearGradient>
-            <linearGradient id="eyeGF" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#7c3aed"/>
-              <stop offset="100%" style="stop-color:#06b6d4"/>
-            </linearGradient>
-            <linearGradient id="irisGF" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#8b5cf6"/>
-              <stop offset="100%" style="stop-color:#0ea5e9"/>
-            </linearGradient>
-            <filter id="glF">
-              <feGaussianBlur stdDeviation="3" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <rect width="200" height="200" rx="36" fill="url(#bgF)"/>
-          <ellipse cx="100" cy="88" rx="78" ry="48" fill="#08081e" stroke="url(#eyeGF)" stroke-width="3" filter="url(#glF)"/>
-          <circle cx="100" cy="88" r="30" fill="url(#irisGF)" filter="url(#glF)"/>
-          <circle cx="100" cy="88" r="16" fill="#030310"/>
-          <text x="92" y="93" font-family="monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&lt;</text>
-          <text x="108" y="93" font-family="monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&gt;</text>
-          <ellipse cx="86" cy="78" rx="7" ry="5" fill="white" opacity="0.45" transform="rotate(-20, 86, 78)"/>
-        </svg>
-        Visual Eyes
-      </div>
-
-      <div class="footer-links">
-        <a href="https://github.com/nikolasdehor/visual-eyes" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://github.com/nikolasdehor/visual-eyes/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
-        <a href="https://github.com/nikolasdehor/visual-eyes/issues" target="_blank" rel="noopener">Issues</a>
-      </div>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <span class="footer-brand">Visual Eyes</span>
+      <span class="footer-tagline">"Because AI should see what it builds."</span>
     </div>
-
-    <div class="footer-sub">
-      Built by <a href="https://github.com/nikolasdehor" target="_blank" rel="noopener" style="color: var(--purple-light); text-decoration: none;">Nikolas DeHor</a>
-      &nbsp;&middot;&nbsp;
-      Because AI should see what it builds
+    <div class="footer-links">
+      <a href="https://github.com/nikolasdehor/visual-eyes" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/nikolasdehor/visual-eyes/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+      <span style="color:var(--text-subtle);font-size:13px">Built by Nikolas DeHor</span>
     </div>
   </div>
 </footer>
 
 <script>
-  function copyInstall() {
-    var btn = document.getElementById('copy-btn');
-    var text = document.getElementById('install-cmd-text').textContent;
-    var label = document.getElementById('copy-label');
-    navigator.clipboard.writeText(text).then(function() {
+  // Scroll animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-up').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Make hero terminal visible immediately
+  document.querySelector('.terminal-wrap').classList.add('visible');
+
+  // Terminal typewriter animation
+  const termLines = [
+    { type: 'prompt', text: '"how does the dashboard look?"', delay: 400 },
+    { type: 'info', text: 'Capturing screenshot...', delay: 900 },
+    { type: 'success', text: 'done (1280x720)', delay: 1400 },
+    { type: 'info', text: 'Analyzing UI...', delay: 1800 },
+    { type: 'success', text: '3 layout issues found', delay: 2300 },
+    { type: 'info', text: 'Fixing sidebar overflow...', delay: 2800 },
+    { type: 'success', text: 'done', delay: 3300 },
+    { type: 'info', text: 'Verifying fix...', delay: 3700 },
+    { type: 'success', text: 'all clear - looks good!', delay: 4200 },
+    { type: 'dim', text: '_ ', delay: 4700, cursor: true },
+  ];
+
+  const termBody = document.getElementById('terminal-body');
+
+  function createTermLine(line) {
+    const el = document.createElement('div');
+    el.className = 'term-line';
+
+    if (line.type === 'prompt') {
+      el.innerHTML = '<span class="term-prompt">&gt;</span><span class="term-cmd">' + line.text + '</span>';
+    } else if (line.type === 'info') {
+      el.innerHTML = '<span class="term-info">' + line.text + '</span>';
+    } else if (line.type === 'success') {
+      el.innerHTML = '<span class="term-success">&#x2714; ' + line.text + '</span>';
+    } else if (line.type === 'dim') {
+      el.innerHTML = '<span class="term-prompt">&gt;</span><span class="term-cursor"></span>';
+    }
+
+    return el;
+  }
+
+  termLines.forEach(line => {
+    const el = createTermLine(line);
+    termBody.appendChild(el);
+    setTimeout(() => {
+      el.classList.add('visible');
+    }, line.delay);
+  });
+
+  // Loop terminal animation
+  function restartTerminal() {
+    const lines = termBody.querySelectorAll('.term-line');
+    lines.forEach(l => l.classList.remove('visible'));
+    setTimeout(() => {
+      termLines.forEach((line, i) => {
+        setTimeout(() => {
+          lines[i] && lines[i].classList.add('visible');
+        }, line.delay);
+      });
+    }, 600);
+  }
+
+  setTimeout(() => {
+    setInterval(restartTerminal, 7000);
+  }, 5000);
+
+  // Copy button
+  function copyCmd(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
       btn.classList.add('copied');
-      label.textContent = 'Copied!';
-      setTimeout(function() {
-        btn.classList.remove('copied');
-        label.textContent = 'Copy';
-      }, 2000);
+      setTimeout(() => btn.classList.remove('copied'), 2000);
     });
   }
 </script>
