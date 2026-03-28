@@ -47,17 +47,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Install Playwright + Chromium
         run: npx playwright install --with-deps chromium
 
       - name: Run screenshot test against example.com
         run: |
-          bash skills/visual-eyes/scripts/screenshot.sh https://example.com /tmp/test-screenshot.png desktop 10000
+          bash skills/visual-eyes/scripts/screenshot.sh https://example.com /tmp/test-screenshot.png 1280,800 10000
           test -f /tmp/test-screenshot.png || { echo "Screenshot not created"; exit 1; }
           echo "Screenshot test passed"
 
