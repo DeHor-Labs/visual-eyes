@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Validate plugin.json
+        run: node -e "JSON.parse(require('fs').readFileSync('.claude-plugin/plugin.json','utf8')); console.log('plugin.json OK')"
+
+      - name: Validate SKILL.md exists and has frontmatter
+        run: |
+          test -f skills/visual-eyes/SKILL.md || { echo "SKILL.md not found"; exit 1; }
+          head -1 skills/visual-eyes/SKILL.md | grep -q '^---' || { echo "SKILL.md missing frontmatter"; exit 1; }
+          echo "SKILL.md OK"
+
+      - name: Test install.sh syntax
+        run: bash -n install.sh && echo "install.sh syntax OK"
+
+      - name: Test screenshot.sh syntax
+        run: bash -n skills/visual-eyes/scripts/screenshot.sh && echo "screenshot.sh syntax OK"
+
+      - name: Test compare.sh syntax
+        run: bash -n skills/visual-eyes/scripts/compare.sh && echo "compare.sh syntax OK"
+
+  test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright + Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run screenshot test against example.com
+        run: |
+          bash skills/visual-eyes/scripts/screenshot.sh https://example.com /tmp/test-screenshot.png desktop 10000
+          test -f /tmp/test-screenshot.png || { echo "Screenshot not created"; exit 1; }
+          echo "Screenshot test passed"
+
+      - name: Run compare test (identical screenshots)
+        run: |
+          cp /tmp/test-screenshot.png /tmp/test-screenshot-copy.png
+          bash skills/visual-eyes/scripts/compare.sh /tmp/test-screenshot.png /tmp/test-screenshot-copy.png /tmp/diff.png 0.1
+          echo "Compare test passed"
