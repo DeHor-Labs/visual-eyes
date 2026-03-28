@@ -21,7 +21,7 @@ echo "Saida:      $OUTPUT"
 npx playwright screenshot "$URL" "$OUTPUT" \
   --viewport-size "$VIEWPORT" \
   --wait-for-timeout "$TIMEOUT" \
-  --wait-for-selector "body" 2>/dev/null
+  --wait-for-selector "body"
 
 if [ $? -eq 0 ]; then
   echo "Screenshot salvo: $OUTPUT"

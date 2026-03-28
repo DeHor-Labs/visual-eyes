@@ -48,8 +48,9 @@ bash /Users/nikolas/.claude/skills/visual-eyes/scripts/screenshot.sh \
 ### Screenshot mobile (iPhone)
 
 ```bash
+# Usa viewport manual (funciona com Chromium, sem precisar instalar WebKit)
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-mobile.png" \
-  --device "iPhone 15" \
+  --viewport-size "390,844" \
   --wait-for-timeout 2000
 ```
 
@@ -191,9 +192,9 @@ npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-desktop.png"
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-tablet.png" \
   --viewport-size "768,1024" --wait-for-timeout 2000
 
-# Mobile
+# Mobile (viewport manual, funciona com Chromium)
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-mobile.png" \
-  --device "iPhone 15" --wait-for-timeout 2000
+  --viewport-size "390,844" --wait-for-timeout 2000
 ```
 
 Leia os tres PNGs com Read e compare o layout em cada tamanho.
