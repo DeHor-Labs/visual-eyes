@@ -8,6 +8,9 @@
   "keywords": ["claude-code", "visual-testing", "playwright", "screenshot", "ai", "skill"],
   "author": "Nikolas DeHor",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/nikolasdehor/visual-eyes"

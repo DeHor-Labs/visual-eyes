@@ -121,10 +121,16 @@ if command -v npx &>/dev/null; then
     PLAYWRIGHT_VERSION="$(npx playwright --version 2>/dev/null || echo "unknown")"
     ok "Playwright found: $PLAYWRIGHT_VERSION"
 
-    # Check if chromium browser is installed
-    if ! npx playwright install --dry-run chromium 2>&1 | grep -q "browser is already installed" 2>/dev/null; then
+    # Check if chromium browser is installed by attempting a quick launch
+    CHROMIUM_OK=false
+    if npx playwright install --check chromium &>/dev/null 2>&1; then
+      CHROMIUM_OK=true
+    fi
+    if [[ "$CHROMIUM_OK" == true ]]; then
+      ok "Chromium browser found."
+    else
       echo ""
-      warn "Playwright Chromium browser may not be installed."
+      warn "Playwright Chromium browser is not installed."
       # Only prompt if running interactively (stdin is a terminal)
       if [[ -t 0 ]]; then
         read -r -p "$(echo -e ${YELLOW}Install Chromium browser now? [Y/n]:${RESET} )" REPLY

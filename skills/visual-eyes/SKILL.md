@@ -1,60 +1,65 @@
 ---
 name: visual-eyes
 description: >
-  Dar olhos ao Claude Code para ver e analisar aplicacoes web rodando.
-  Use quando: usuario pedir screenshot, mencionar bug visual, layout quebrado,
-  "como esta ficando", "olha a tela", "tem algo errado no UI", "visual regression",
-  "compara antes e depois", "testa visual", "como ta o design", "screenshot",
-  "captura a tela", "mostra como ta", ou qualquer referencia a aparencia visual.
+  Give Claude Code eyes to see and analyze running web applications.
+  Use when: user asks for a screenshot, mentions a visual bug, broken layout,
+  "how does it look", "take a screenshot", "visual regression", "compare before
+  and after", "test the UI", "show me the screen", or any reference to the
+  visual appearance of a running app.
 ---
 
-# Visual Eyes - Olhos para Aplicacoes Web
+# Visual Eyes - Eyes for Web Applications
 
-Esta skill permite que o Claude veja aplicacoes web rodando localmente, identifique
-problemas visuais e corrija o codigo automaticamente.
+This skill lets Claude see locally running web applications, identify visual
+problems, and fix the code automatically.
 
-**Ferramentas disponiveis em `scripts/`:**
-- `scripts/screenshot.sh` - Captura screenshot de uma URL
-- `scripts/compare.sh` - Compara dois screenshots e gera diff visual
+**Available tools in `scripts/`:**
+- `scripts/screenshot.sh` - Capture a screenshot of a URL
+- `scripts/compare.sh` - Compare two screenshots and generate a visual diff
 
-**SEMPRE execute scripts com os argumentos corretos.** Leia a secao de uso abaixo.
-
----
-
-## Fluxo Principal: Ver -> Analisar -> Corrigir -> Verificar
-
-```
-1. Captura screenshot da aplicacao
-2. Le o arquivo PNG com a ferramenta Read (visao multimodal)
-3. Identifica problemas visuais
-4. Corrige o codigo
-5. Captura novo screenshot
-6. Compara visualmente - esta correto?
-7. Itera ate ficar certo
-```
-
----
-
-## MODO CAPTURA - Tirar Screenshots
-
-### Screenshot basico (desktop 1280x800)
+The scripts live inside the skill directory. Resolve the path at runtime:
 
 ```bash
-bash /Users/nikolas/.claude/skills/visual-eyes/scripts/screenshot.sh \
+SKILL_DIR="$HOME/.claude/skills/visual-eyes"
+```
+
+**ALWAYS run scripts with the correct arguments.** See the usage sections below.
+
+---
+
+## Main Flow: See -> Analyze -> Fix -> Verify
+
+```
+1. Capture a screenshot of the application
+2. Read the PNG file with the Read tool (multimodal vision)
+3. Identify visual problems
+4. Fix the code
+5. Capture a new screenshot
+6. Compare visually - is it correct now?
+7. Iterate until it looks right
+```
+
+---
+
+## CAPTURE MODE - Taking Screenshots
+
+### Basic screenshot (desktop 1280x800)
+
+```bash
+bash "$HOME/.claude/skills/visual-eyes/scripts/screenshot.sh" \
   "http://localhost:3000" \
   "/tmp/visual-eyes-capture.png"
 ```
 
-### Screenshot mobile (iPhone)
+### Mobile screenshot (iPhone)
 
 ```bash
-# Usa viewport manual (funciona com Chromium, sem precisar instalar WebKit)
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-mobile.png" \
   --viewport-size "390,844" \
   --wait-for-timeout 2000
 ```
 
-### Screenshot pagina completa (scroll inteiro)
+### Full-page screenshot (full scroll)
 
 ```bash
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-full.png" \
@@ -63,14 +68,14 @@ npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-full.png" \
   --wait-for-timeout 2000
 ```
 
-### Screenshot de rota especifica
+### Screenshot of a specific route
 
-Substitua a URL pelo $ARGUMENTS se o usuario passar uma rota ou URL personalizada.
-Exemplos de $ARGUMENTS: `/dashboard`, `http://localhost:5173/settings`, `http://localhost:8000`
+Replace the URL with `$ARGUMENTS` when the user provides a custom route or URL.
+Examples: `/dashboard`, `http://localhost:5173/settings`, `http://localhost:8000`
 
-URL padrao: `http://localhost:3000` se o usuario nao especificar nada.
+Default URL: `http://localhost:3000` when the user does not specify one.
 
-### Varrer multiplas rotas de uma vez
+### Sweep multiple routes at once
 
 ```bash
 for ROUTE in "/" "/dashboard" "/settings" "/profile"; do
@@ -79,109 +84,109 @@ for ROUTE in "/" "/dashboard" "/settings" "/profile"; do
     "/tmp/visual-eyes${SLUG}.png" \
     --viewport-size "1280,800" \
     --wait-for-timeout 2000
-  echo "Capturado: /tmp/visual-eyes${SLUG}.png"
+  echo "Captured: /tmp/visual-eyes${SLUG}.png"
 done
 ```
 
-Depois use a ferramenta Read em cada arquivo PNG para analisar visualmente.
+Then use the Read tool on each PNG file to analyze it visually.
 
 ---
 
-## MODO ANALISE - O que verificar ao ver o screenshot
+## ANALYSIS MODE - What to check when viewing a screenshot
 
-Quando voce le um PNG com a ferramenta Read, analise os seguintes aspectos:
+When you read a PNG with the Read tool, check the following:
 
-### Layout e estrutura
-- Elementos sobrepostos ou fora de posicao
-- Grids/flexbox quebrados (colunas desalinhadas, itens fora do container)
-- Margens e paddings inconsistentes
-- Elementos cortados pelo viewport
+### Layout and structure
+- Overlapping elements or elements out of position
+- Broken grids/flexbox (misaligned columns, items outside container)
+- Inconsistent margins and paddings
+- Elements clipped by the viewport
 
-### Tipografia
-- Texto truncado com ellipsis inesperado
-- Overflow de texto saindo do container
-- Tamanho de fonte inadequado para o contexto
-- Hierarquia visual inconsistente (h1 menor que h2, etc.)
+### Typography
+- Text truncated with unexpected ellipsis
+- Text overflowing the container
+- Font size inappropriate for the context
+- Inconsistent visual hierarchy (h1 smaller than h2, etc.)
 
-### Cores e contraste
-- Texto com baixo contraste sobre fundo (dificulta leitura)
-- Cores erradas (botao primario com cor secundaria)
-- Elementos sem cor quando deveriam ter
+### Colors and contrast
+- Low-contrast text on background (hard to read)
+- Wrong colors (primary button with secondary color)
+- Elements missing color when they should have it
 
-### Responsividade
-- Elementos saindo da tela em mobile
-- Botoes pequenos demais para toque (< 44px)
-- Texto ilegivel em tela pequena
+### Responsiveness
+- Elements going off-screen on mobile
+- Buttons too small for touch (< 44px)
+- Unreadable text on small screens
 
-### Estado de carregamento
-- Areas em branco onde deveria haver conteudo
-- Spinners/skeletons travados
-- Mensagens de erro visiveis
-- Dados mockados ainda aparecendo em producao
+### Loading state
+- Blank areas where content should be
+- Stuck spinners/skeletons
+- Visible error messages
+- Mock data still appearing in production
 
-### Alinhamento e espacamento
-- Inconsistencia de espacamento entre secoes similares
-- Elementos desalinhados entre si
-- Padding/margin zerado acidentalmente
+### Alignment and spacing
+- Inconsistent spacing between similar sections
+- Elements misaligned with each other
+- Accidentally zeroed padding/margin
 
 ---
 
-## MODO CORRECAO - Loop automatico de correcao
+## FIX MODE - Automatic fix loop
 
-Quando identificar um problema visual:
+When you identify a visual problem:
 
-1. Anote o problema especifico (ex: "header sobrepondo o conteudo principal em 20px")
-2. Localize o componente ou arquivo CSS responsavel
-3. Aplique a correcao
-4. Capture novo screenshot com nome diferente:
+1. Note the specific issue (e.g., "header overlapping main content by 20px")
+2. Locate the responsible component or CSS file
+3. Apply the fix
+4. Capture a new screenshot with a different name:
 
 ```bash
-bash /Users/nikolas/.claude/skills/visual-eyes/scripts/screenshot.sh \
+bash "$HOME/.claude/skills/visual-eyes/scripts/screenshot.sh" \
   "http://localhost:3000" \
   "/tmp/visual-eyes-after-fix.png"
 ```
 
-5. Leia o novo PNG com Read e verifique visualmente
-6. Se ainda houver problema, repita o ciclo
-7. Mostre antes e depois para o usuario
+5. Read the new PNG with Read and verify visually
+6. If there is still a problem, repeat the cycle
+7. Show before and after to the user
 
 ---
 
-## MODO COMPARACAO - Regressao visual
+## COMPARE MODE - Visual regression
 
-Usar quando o usuario quiser comparar o estado antes e depois de uma mudanca.
+Use when the user wants to compare the state before and after a change.
 
-### Salvar baseline antes de modificar
+### Save baseline before modifying
 
 ```bash
 cp /tmp/visual-eyes-capture.png /tmp/visual-eyes-baseline.png
 ```
 
-### Tirar screenshot depois das mudancas
+### Take screenshot after changes
 
 ```bash
-bash /Users/nikolas/.claude/skills/visual-eyes/scripts/screenshot.sh \
+bash "$HOME/.claude/skills/visual-eyes/scripts/screenshot.sh" \
   "http://localhost:3000" \
   "/tmp/visual-eyes-after.png"
 ```
 
-### Gerar imagem de diff (pixels vermelhos = diferencas)
+### Generate diff image (red pixels = differences)
 
 ```bash
-bash /Users/nikolas/.claude/skills/visual-eyes/scripts/compare.sh \
+bash "$HOME/.claude/skills/visual-eyes/scripts/compare.sh" \
   "/tmp/visual-eyes-baseline.png" \
   "/tmp/visual-eyes-after.png" \
   "/tmp/visual-eyes-diff.png"
 ```
 
-Depois use Read em `/tmp/visual-eyes-diff.png` para ver exatamente o que mudou.
-Pixels vermelhos indicam areas modificadas. Quanto mais vermelho, maior a diferenca.
+Then use Read on `/tmp/visual-eyes-diff.png` to see exactly what changed.
+Red pixels indicate modified areas. More red means bigger difference.
 
 ---
 
-## MODO RESPONSIVO - Desktop e Mobile lado a lado
+## RESPONSIVE MODE - Desktop and Mobile side by side
 
-Para verificar comportamento responsivo completo:
+To check full responsive behavior:
 
 ```bash
 # Desktop
@@ -192,41 +197,41 @@ npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-desktop.png"
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-tablet.png" \
   --viewport-size "768,1024" --wait-for-timeout 2000
 
-# Mobile (viewport manual, funciona com Chromium)
+# Mobile
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-mobile.png" \
   --viewport-size "390,844" --wait-for-timeout 2000
 ```
 
-Leia os tres PNGs com Read e compare o layout em cada tamanho.
+Read all three PNGs with Read and compare the layout at each size.
 
 ---
 
-## Tratamento de erros
+## Error handling
 
-### Servidor nao esta rodando
+### Server is not running
 
-Se o screenshot falhar com erro de conexao, informe o usuario:
-"O servidor nao esta rodando em localhost:3000. Inicie o servidor primeiro."
+If the screenshot fails with a connection error, inform the user:
+"The server is not running at localhost:3000. Please start the server first."
 
-Sugestoes de como iniciar (tente identificar pelo projeto):
+Suggestions for how to start it (try to identify from the project):
 - React/Vite: `npm run dev`
 - Next.js: `npm run dev`
 - FastAPI: `uvicorn main:app --reload`
 - Django: `python manage.py runserver`
 
-### Browsers do Playwright nao instalados
+### Playwright browsers not installed
 
-Se o erro for sobre browsers ausentes:
+If the error is about missing browsers:
 
 ```bash
 npx playwright install chromium
 ```
 
-Aguarde a instalacao e tente o screenshot novamente.
+Wait for installation and try the screenshot again.
 
-### Pagina carregando dados assincronos
+### Page loading async data
 
-Se a pagina aparecer em branco ou com loading spinner, aumente o timeout:
+If the page appears blank or shows a loading spinner, increase the timeout:
 
 ```bash
 npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-capture.png" \
@@ -234,7 +239,7 @@ npx playwright screenshot "http://localhost:3000" "/tmp/visual-eyes-capture.png"
   --wait-for-timeout 5000
 ```
 
-Para paginas com autenticacao ou estado complexo, use Python com Playwright:
+For pages with authentication or complex state, use Python with Playwright:
 
 ```python
 from playwright.sync_api import sync_playwright
@@ -247,39 +252,39 @@ with sync_playwright() as p:
     page.wait_for_timeout(2000)
     page.screenshot(path="/tmp/visual-eyes-capture.png", full_page=False)
     browser.close()
-    print("Screenshot salvo: /tmp/visual-eyes-capture.png")
+    print("Screenshot saved: /tmp/visual-eyes-capture.png")
 ```
 
 ---
 
-## Convencoes de nomes de arquivo
+## File naming conventions
 
-Todos os arquivos temporarios ficam em `/tmp/visual-eyes-*` para nao poluir o projeto.
+All temporary files live in `/tmp/visual-eyes-*` to avoid polluting the project.
 
-| Arquivo | Uso |
+| File | Use |
 |---|---|
-| `/tmp/visual-eyes-capture.png` | Screenshot principal atual |
-| `/tmp/visual-eyes-baseline.png` | Baseline para comparacao |
-| `/tmp/visual-eyes-after.png` | Apos modificacoes |
-| `/tmp/visual-eyes-diff.png` | Diff de regressao visual |
+| `/tmp/visual-eyes-capture.png` | Current main screenshot |
+| `/tmp/visual-eyes-baseline.png` | Baseline for comparison |
+| `/tmp/visual-eyes-after.png` | After modifications |
+| `/tmp/visual-eyes-diff.png` | Visual regression diff |
 | `/tmp/visual-eyes-desktop.png` | Desktop 1280x800 |
 | `/tmp/visual-eyes-tablet.png` | Tablet 768x1024 |
 | `/tmp/visual-eyes-mobile.png` | Mobile iPhone |
-| `/tmp/visual-eyes-full.png` | Pagina completa (scroll) |
-| `/tmp/visual-eyes-{rota}.png` | Rotas especificas |
+| `/tmp/visual-eyes-full.png` | Full page (scroll) |
+| `/tmp/visual-eyes-{route}.png` | Specific routes |
 
 ---
 
-## Exemplos de frases que ativam esta skill
+## Example phrases that activate this skill
 
-- "olha como ta ficando o dashboard"
-- "tem um bug visual no header"
-- "o layout ta quebrado em mobile"
-- "screenshot do localhost"
-- "como ta o design da pagina de login"
-- "compara antes e depois da minha mudanca"
-- "faz um visual regression test"
-- "a sidebar ta sobrepondoo conteudo"
-- "mostra como ta a tela"
-- "captura a tela do app"
-- "testa o visual do componente"
+- "screenshot the homepage"
+- "how does the dashboard look?"
+- "there's a visual bug in the header"
+- "the layout is broken on mobile"
+- "screenshot localhost"
+- "compare before and after my change"
+- "run a visual regression test"
+- "the sidebar is overlapping the content"
+- "show me how the screen looks"
+- "capture the app screen"
+- "test the component visually"
