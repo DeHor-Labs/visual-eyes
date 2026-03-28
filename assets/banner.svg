@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0d1a"/>
+      <stop offset="50%" style="stop-color:#0f1229"/>
+      <stop offset="100%" style="stop-color:#0a0a18"/>
+    </linearGradient>
+    <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="50%" style="stop-color:#2563eb"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="irisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#a78bfa"/>
+      <stop offset="50%" style="stop-color:#60a5fa"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="eyeClip">
+      <ellipse cx="100" cy="100" rx="70" ry="42"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="200" fill="url(#bg)"/>
+
+  <!-- Subtle grid lines -->
+  <g opacity="0.04" stroke="#7c3aed" stroke-width="1">
+    <line x1="0" y1="25" x2="800" y2="25"/>
+    <line x1="0" y1="50" x2="800" y2="50"/>
+    <line x1="0" y1="75" x2="800" y2="75"/>
+    <line x1="0" y1="100" x2="800" y2="100"/>
+    <line x1="0" y1="125" x2="800" y2="125"/>
+    <line x1="0" y1="150" x2="800" y2="150"/>
+    <line x1="0" y1="175" x2="800" y2="175"/>
+    <line x1="25" y1="0" x2="25" y2="200"/>
+    <line x1="50" y1="0" x2="50" y2="200"/>
+    <line x1="75" y1="0" x2="75" y2="200"/>
+  </g>
+
+  <!-- Eye glow halo -->
+  <ellipse cx="100" cy="100" rx="80" ry="52" fill="none" stroke="#7c3aed" stroke-width="1" opacity="0.2" filter="url(#softGlow)"/>
+
+  <!-- Eye outline / sclera -->
+  <ellipse cx="100" cy="100" rx="70" ry="42" fill="#0d0d2e" stroke="url(#eyeGrad)" stroke-width="2.5" filter="url(#glow)"/>
+
+  <!-- Retina rings (subtle) -->
+  <ellipse cx="100" cy="100" rx="38" ry="38" fill="none" stroke="#1e1b4b" stroke-width="1" clip-path="url(#eyeClip)"/>
+  <ellipse cx="100" cy="100" rx="28" ry="28" fill="none" stroke="#1e1b4b" stroke-width="1" clip-path="url(#eyeClip)"/>
+
+  <!-- Iris -->
+  <circle cx="100" cy="100" r="26" fill="url(#irisGrad)" opacity="0.9" filter="url(#glow)"/>
+
+  <!-- Pupil with code brackets -->
+  <circle cx="100" cy="100" r="14" fill="#050510"/>
+
+  <!-- Left bracket in pupil -->
+  <text x="90" y="104.5" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#e2e8f0" text-anchor="middle">&lt;</text>
+  <!-- Right bracket in pupil -->
+  <text x="110" y="104.5" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#e2e8f0" text-anchor="middle">&gt;</text>
+
+  <!-- Eye highlight -->
+  <ellipse cx="86" cy="90" rx="6" ry="4" fill="white" opacity="0.4" transform="rotate(-20, 86, 90)"/>
+
+  <!-- Eyelashes / scan lines -->
+  <g stroke="url(#eyeGrad)" stroke-width="1.5" opacity="0.6">
+    <line x1="45" y1="85" x2="38" y2="78"/>
+    <line x1="56" y1="72" x2="51" y2="63"/>
+    <line x1="75" y1="63" x2="73" y2="53"/>
+    <line x1="100" y1="60" x2="100" y2="50"/>
+    <line x1="125" y1="63" x2="127" y2="53"/>
+    <line x1="144" y1="72" x2="149" y2="63"/>
+    <line x1="155" y1="85" x2="162" y2="78"/>
+  </g>
+
+  <!-- Title text -->
+  <text x="210" y="88" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="url(#textGrad)" letter-spacing="-1" filter="url(#glow)">Visual Eyes</text>
+
+  <!-- Tagline -->
+  <text x="212" y="126" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="18" font-weight="400" fill="#94a3b8" letter-spacing="0.5">Give Claude Code eyes to see your app</text>
+
+  <!-- Decorative accent line -->
+  <rect x="210" y="138" width="340" height="2" rx="1" fill="url(#textGrad)" opacity="0.6"/>
+
+  <!-- Small badge labels -->
+  <g font-family="'Courier New', monospace" font-size="11" fill="#64748b">
+    <text x="212" y="165">screenshot</text>
+    <text x="290" y="165">·</text>
+    <text x="300" y="165">analyze</text>
+    <text x="362" y="165">·</text>
+    <text x="372" y="165">fix</text>
+    <text x="395" y="165">·</text>
+    <text x="405" y="165">verify</text>
+  </g>
+</svg>

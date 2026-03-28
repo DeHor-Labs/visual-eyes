@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bgLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0d1a"/>
+      <stop offset="100%" style="stop-color:#0f1229"/>
+    </linearGradient>
+    <linearGradient id="eyeGradLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="50%" style="stop-color:#2563eb"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="irisGradLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#0ea5e9"/>
+    </linearGradient>
+    <filter id="glowLogo">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="outerGlow">
+      <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="eyeClipLogo">
+      <ellipse cx="100" cy="88" rx="78" ry="48"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="200" height="200" rx="36" fill="url(#bgLogo)"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.05" stroke="#7c3aed" stroke-width="1">
+    <line x1="0" y1="40" x2="200" y2="40"/>
+    <line x1="0" y1="80" x2="200" y2="80"/>
+    <line x1="0" y1="120" x2="200" y2="120"/>
+    <line x1="0" y1="160" x2="200" y2="160"/>
+    <line x1="40" y1="0" x2="40" y2="200"/>
+    <line x1="80" y1="0" x2="80" y2="200"/>
+    <line x1="120" y1="0" x2="120" y2="200"/>
+    <line x1="160" y1="0" x2="160" y2="200"/>
+  </g>
+
+  <!-- Outer glow ring -->
+  <ellipse cx="100" cy="88" rx="86" ry="56" fill="none" stroke="#7c3aed" stroke-width="1" opacity="0.15" filter="url(#outerGlow)"/>
+
+  <!-- Eye white / sclera -->
+  <ellipse cx="100" cy="88" rx="78" ry="48" fill="#08081e" stroke="url(#eyeGradLogo)" stroke-width="3" filter="url(#glowLogo)"/>
+
+  <!-- Retina texture rings -->
+  <ellipse cx="100" cy="88" rx="44" ry="44" fill="none" stroke="#1a1a40" stroke-width="1.5" clip-path="url(#eyeClipLogo)"/>
+  <ellipse cx="100" cy="88" rx="32" ry="32" fill="none" stroke="#1a1a40" stroke-width="1" clip-path="url(#eyeClipLogo)"/>
+
+  <!-- Iris -->
+  <circle cx="100" cy="88" r="30" fill="url(#irisGradLogo)" filter="url(#glowLogo)"/>
+
+  <!-- Pupil -->
+  <circle cx="100" cy="88" r="16" fill="#030310"/>
+
+  <!-- Code brackets in pupil -->
+  <text x="92" y="93" font-family="'Courier New', monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&lt;</text>
+  <text x="108" y="93" font-family="'Courier New', monospace" font-size="16" font-weight="900" fill="#f1f5f9" text-anchor="middle">&gt;</text>
+
+  <!-- Eye highlight -->
+  <ellipse cx="86" cy="78" rx="7" ry="5" fill="white" opacity="0.45" transform="rotate(-20, 86, 78)"/>
+
+  <!-- Eyelashes top -->
+  <g stroke="url(#eyeGradLogo)" stroke-width="2" opacity="0.7" stroke-linecap="round">
+    <line x1="32" y1="73" x2="24" y2="64"/>
+    <line x1="52" y1="52" x2="46" y2="41"/>
+    <line x1="78" y1="42" x2="75" y2="30"/>
+    <line x1="100" y1="40" x2="100" y2="28"/>
+    <line x1="122" y1="42" x2="125" y2="30"/>
+    <line x1="148" y1="52" x2="154" y2="41"/>
+    <line x1="168" y1="73" x2="176" y2="64"/>
+  </g>
+
+  <!-- Bottom text label -->
+  <text x="100" y="162" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" font-weight="700" fill="#94a3b8" text-anchor="middle" letter-spacing="3">VISUAL EYES</text>
+
+  <!-- Accent underline -->
+  <rect x="54" y="167" width="92" height="2" rx="1" fill="url(#eyeGradLogo)" opacity="0.7"/>
+</svg>
