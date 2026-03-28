@@ -49,7 +49,7 @@ DEPS_DIR="/tmp/visual-eyes-deps"
 if [ ! -d "$DEPS_DIR/node_modules/pixelmatch" ] || [ ! -d "$DEPS_DIR/node_modules/pngjs" ]; then
   echo "Instalando dependencias (pngjs, pixelmatch)..."
   mkdir -p "$DEPS_DIR"
-  npm install --prefix "$DEPS_DIR" pngjs pixelmatch --save=false --loglevel=error
+  npm install --prefix "$DEPS_DIR" pngjs pixelmatch@5.3.0 --save=false --loglevel=error
   if [ $? -ne 0 ]; then
     echo "ERRO: Falha ao instalar dependencias. Verifique sua conexao com a internet."
     exit 1
