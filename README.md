@@ -174,7 +174,7 @@ MIT - see [LICENSE](LICENSE)
 ---
 
 <p align="center">
-  Built by <a href="https://github.com/nikolasdehor">Nikolas DeHor</a>
+  Built by <a href="https://github.com/nikolasdehor">Nikolas de Hor</a>
   <br><br>
   <sub>Because AI should see what it builds</sub>
 </p>
