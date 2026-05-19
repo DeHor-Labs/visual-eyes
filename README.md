@@ -8,6 +8,7 @@
 </p>
 
 <p align="center">
+  <a href="#-what-it-does">What it does</a> ·
   <a href="#-install">Install</a> ·
   <a href="#-how-it-works">How it Works</a> ·
   <a href="#-features">Features</a> ·
@@ -17,7 +18,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/stars/nikolasdehor/visual-eyes?style=flat-square&labelColor=0d0d1a&color=7c3aed" alt="Stars">
-  <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=0d0d1a&color=2563eb" alt="License">
+  <img src="https://img.shields.io/github/forks/nikolasdehor/visual-eyes?style=flat-square&labelColor=0d0d1a&color=7c3aed" alt="Forks">
+  <img src="https://img.shields.io/github/license/nikolasdehor/visual-eyes?style=flat-square&labelColor=0d0d1a&color=2563eb" alt="License">
   <img src="https://img.shields.io/badge/Claude_Code-compatible-06b6d4?style=flat-square&labelColor=0d0d1a" alt="Claude Code compatible">
   <img src="https://img.shields.io/badge/Playwright-powered-45ba4b?style=flat-square&labelColor=0d0d1a" alt="Playwright powered">
   <img src="https://img.shields.io/badge/zero-config-a78bfa?style=flat-square&labelColor=0d0d1a" alt="Zero config">
@@ -25,11 +27,23 @@
 
 ---
 
+## What it does
+
+**Visual Eyes** is a Claude Code skill that bridges the gap between terminal-based AI coding and visual UI verification. It uses Playwright to capture screenshots of your local application, allowing Claude to "see" exactly what it is building.
+
+By adding a visual layer to the development loop, it enables Claude to:
+- **Identify** visual bugs, layout shifts, and CSS regressions automatically.
+- **Analyze** the impact of code changes on different screen sizes (Mobile, Tablet, Desktop).
+- **Verify** that its own fixes actually worked by comparing before-and-after states.
+- **Audit** typography, colors, and spacing against design requirements.
+
+---
+
 ## The Problem
 
-Claude Code can write incredible code - but it's **blind to the result**.
+Claude Code can write incredible code - but it is **blind to the result**.
 
-Frontend devs waste 10 minutes describing a visual bug in words, while Claude guesses what's wrong and ships fixes that introduce new problems. You describe, Claude guesses, you describe again. Repeat until frustration.
+Frontend devs waste 10 minutes describing a visual bug in words, while Claude guesses what is wrong and ships fixes that introduce new problems. You describe, Claude guesses, you describe again. Repeat until frustration.
 
 **Visual Eyes gives Claude actual vision.** Take a screenshot, Claude sees it, Claude fixes it, Claude verifies the fix - in one loop.
 
