@@ -16,11 +16,63 @@ RESET='\033[0m'
 SKILL_DIR="$HOME/.claude/skills/visual-eyes"
 REPO_URL="https://github.com/nikolasdehor/visual-eyes"
 RAW_BASE="https://raw.githubusercontent.com/nikolasdehor/visual-eyes/main"
+DRY_RUN=false
 
 log()    { echo -e "${BLUE}[visual-eyes]${RESET} $*"; }
 ok()     { echo -e "${GREEN}[visual-eyes]${RESET} $*"; }
 warn()   { echo -e "${YELLOW}[visual-eyes]${RESET} WARNING: $*"; }
 err()    { echo -e "${RED}[visual-eyes]${RESET} ERROR: $*" >&2; }
+
+print_usage() {
+  cat <<USAGE
+Usage: bash install.sh [OPTIONS]
+
+Install the Visual Eyes Claude Code skill.
+
+Options:
+  --dry-run       Show what would be installed without making changes.
+  -h, --help      Show this help message and exit.
+
+Examples:
+  bash install.sh
+  bash install.sh --dry-run
+  curl -fsSL $RAW_BASE/install.sh | bash
+  curl -fsSL $RAW_BASE/install.sh | bash -s -- --dry-run
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=true
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      err "Unknown option: $1"
+      print_usage >&2
+      exit 1
+      ;;
+    *)
+      err "Unexpected argument: $1"
+      print_usage >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+if [[ $# -gt 0 ]]; then
+  err "Unexpected argument: $1"
+  print_usage >&2
+  exit 1
+fi
 
 # Detect if we're running from inside the repo (local install)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
@@ -40,6 +92,33 @@ if [[ -d "$SKILL_DIR" ]]; then
 else
   log "Fresh installation..."
   IS_UPDATE=false
+fi
+
+if [[ "$DRY_RUN" == true ]]; then
+  echo ""
+  log "Dry run mode - no files will be installed."
+  echo ""
+  echo "Install type: $([[ "$IS_UPDATE" == true ]] && echo "update" || echo "fresh install")"
+  if [[ "$IS_LOCAL" == true ]]; then
+    echo "Source:       local repo: $SCRIPT_DIR"
+  elif command -v git &>/dev/null; then
+    echo "Source:       git clone: $REPO_URL"
+  else
+    echo "Source:       raw download: $RAW_BASE"
+  fi
+  echo "Target dir:   $SKILL_DIR"
+  echo ""
+  echo "Files that would be installed:"
+  echo "  $SKILL_DIR/SKILL.md"
+  echo "  $SKILL_DIR/scripts/screenshot.sh"
+  echo "  $SKILL_DIR/scripts/compare.sh"
+  echo ""
+  echo "Actions skipped:"
+  echo "  mkdir -p $SKILL_DIR/scripts"
+  echo "  copy or download skill files"
+  echo "  chmod +x helper scripts"
+  echo "  Playwright availability check"
+  exit 0
 fi
 
 # Check required tools
@@ -133,7 +212,8 @@ if command -v npx &>/dev/null; then
       warn "Playwright Chromium browser is not installed."
       # Only prompt if running interactively (stdin is a terminal)
       if [[ -t 0 ]]; then
-        read -r -p "$(echo -e ${YELLOW}Install Chromium browser now? [Y/n]:${RESET} )" REPLY
+        printf -v PROMPT "%b" "${YELLOW}Install Chromium browser now? [Y/n]:${RESET} "
+        read -r -p "$PROMPT" REPLY
         REPLY="${REPLY:-Y}"
       else
         REPLY="Y"
