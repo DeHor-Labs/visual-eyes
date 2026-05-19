@@ -12,7 +12,7 @@
 
 6/7 Também incluí suporte a regressão visual (pixel diff). Se você refatorou um CSS global, o Visual Eyes compara o antes e depois, destacando em vermelho exatamente o que mudou na interface. Segurança total para o seu deploy.
 
-7/7 O projeto é open source e fácil de instalar. Se você quer parar de adivinhar e começar a ver o que a IA está construindo, confira o Visual Eyes. 
+7/7 O projeto é open source e fácil de instalar. Se você quer parar de adivinhar e começar a ver o que a IA está construindo, confira o Visual Eyes.
 
 Feito com ☕ por Nikolas de Hor em Goiânia.
 Link: https://github.com/nikolasdehor/visual-eyes
