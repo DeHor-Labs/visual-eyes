@@ -6,7 +6,7 @@
     "visual-eyes-install": "./install.sh"
   },
   "keywords": ["claude-code", "visual-testing", "playwright", "screenshot", "ai", "skill"],
-  "author": "Nikolas DeHor",
+  "author": "Nikolas de Hor",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"

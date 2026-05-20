@@ -1,0 +1,104 @@
+site_name: Visual Eyes
+site_description: Dê olhos ao Claude Code. Skill que permite ao Claude ver aplicações web rodando via Playwright e fazer testing visual + auto-fix.
+site_url: https://nikolasdehor.github.io/visual-eyes/
+site_author: Nikolas de Hor
+repo_url: https://github.com/nikolasdehor/visual-eyes
+repo_name: nikolasdehor/visual-eyes
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Modo claro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.action.edit
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nikolasdehor
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/nikolasdehor
+  generator: false
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: [".", "docs"]
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      lang: pt
+  - mermaid2
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+      timezone: America/Sao_Paulo
+      locale: pt
+      fallback_to_build_date: true
+
+nav:
+  - Início: index.md
+  - Comece aqui:
+      - Instalação: getting-started/install.md
+      - Quickstart: getting-started/quickstart.md
+      - Configuração: getting-started/config.md
+  - Casos de uso:
+      - Testing visual: use-cases/visual-testing.md
+      - Auto-fix de UI: use-cases/auto-fix.md
+      - Acessibilidade: use-cases/accessibility.md
+  - Como funciona: how-it-works.md
+  - Comparativo: comparison.md
+  - Contribuir: contributing.md
+  - Changelog: changelog.md
