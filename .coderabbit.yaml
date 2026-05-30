@@ -1,193 +1,69 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-# CodeRabbit Configuration - Nikolas de Hor projects
-# Template universal: cobre stacks variadas (Next.js, React, FastAPI, Python CLI, MCP servers, Flutter, Static, Shell)
+# Template React/Vite/TS + Supabase
 
 language: "pt-BR"
-tone_instructions: "Seja profissional, construtivo e focado em qualidade. Comentários em português do Brasil. Sem em dashes (— ou –), usar hífens (-) ou vírgulas. Nome do autor: Nikolas de Hor. Goiânia sempre com acento."
+tone_instructions: "Assertivo. Bugs, segurança e performance. pt-BR, hífens, sem em-dashes."
+# 68 chars
+
 early_access: false
 
 reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  review_status: true
+  poem: false
+  sequence_diagrams: true
+  estimate_code_review_effort: true
+
   auto_review:
     enabled: true
+    drafts: false
     base_branches:
       - main
-    drafts: false
-    auto_incremental_review: false
-
-  request_changes_workflow: false
-  high_level_summary: true
-  poem: false
-  review_status: true
-  collapse_walkthrough: false
 
   path_instructions:
-    - path: "**/*.{ts,tsx,js,jsx}"
+    - path: "src/**/*.{ts,tsx,js,jsx}"
       instructions: |
-        TypeScript/JavaScript geral. Verificar:
-        - Tipos estritos quando possível (evitar any sem justificativa).
-        - Async/await sem unhandled promise rejection.
-        - Imports organizados (sem ciclos).
-        - Sem console.log esquecido em produção.
-        - Sem credenciais hardcoded ou tokens.
-        - process.env validado (não usar undefined silenciosamente).
+        TypeScript/React. Verificar:
+        - Sem uso de `any` sem justificativa.
+        - Hooks usados corretamente (dependências em useEffect, cleanup em subscriptions).
+        - Props com tipos explícitos, sem PropTypes implícitos.
+        - Não renderizar dados não sanitizados via dangerouslySetInnerHTML.
+        - Estados de erro e loading tratados explicitamente (não só happy path).
 
-    - path: "**/*.{py}"
+    - path: "src/services/**"
       instructions: |
-        Python geral. Verificar:
-        - PEP 8 e type hints quando aplicável.
-        - try/except específico (não capturar Exception nu).
-        - Sem credenciais hardcoded.
-        - os.environ validado.
-        - SQL queries parametrizadas (nunca f-string em SQL).
-        - Subprocess sem shell=True com input não confiável.
+        Camada de serviço. Verificar:
+        - Chamadas de API com tratamento de erro explícito.
+        - Tokens/credenciais nunca logados ou expostos em respostas de erro.
+        - Retry com backoff em endpoints críticos.
 
-    - path: "**/*.{dart}"
+    - path: "supabase/**"
       instructions: |
-        Dart/Flutter geral. Verificar:
-        - null safety estrito.
-        - StatelessWidget preferido quando não há state.
-        - Async/await com error handling.
-        - BuildContext não usado após dispose.
-        - Sem chaves hardcoded.
+        Supabase: RLS habilitado em todas as tabelas com dados de usuário, policies com
+        user_id = auth.uid(), migrations idempotentes, índices em colunas de filtro.
+        Nunca chamar supabase.auth.admin sem verificação de papel admin.
 
-    - path: "**/auth/**"
+    - path: ".github/workflows/**"
       instructions: |
-        Auth crítico. Verificar:
-        - Secrets sempre via env vars.
-        - Tokens com expiração apropriada.
-        - bcrypt rounds >= 10 (idealmente 12).
-        - Endpoints não vazam existência de usuário.
-        - Rate limit em login/signup/forgot-password.
-        - Logout limpa estado completamente (localStorage, cookies, refresh token).
+        CI/CD: secrets via secrets.*, nunca hardcoded. Permissions mínimas. Actions
+        pinadas por SHA quando possível. Concurrency control pra evitar runs duplicados.
 
-    - path: "**/api/**"
+    - path: "**/.env.example"
       instructions: |
-        API endpoints. Verificar:
-        - Validação de entrada via schema (Zod, Pydantic, class-validator).
-        - Rate limiting onde aplicável.
-        - Mensagens de erro não vazam stack trace em produção.
-        - Status codes corretos (401 vs 403, 400 vs 422).
-        - CORS configurado de forma restritiva.
-
-    - path: "**/middleware*"
-      instructions: |
-        Middleware. Verificar:
-        - Matcher cobre todas rotas pretendidas.
-        - Não bloqueia rotas públicas por engano.
-        - Headers de segurança aplicados (CSP, X-Frame-Options, etc).
-
-    - path: "**/migrations/**"
-      instructions: |
-        Database migrations. Verificar:
-        - Não destrutivas sem backup (DROP TABLE, DROP COLUMN).
-        - Rollback documentado.
-        - Mudança de tipo de coluna tem migração de dados.
-        - FK com índice no lado FK.
-
-    - path: "**/schema.{prisma,sql}"
-      instructions: |
-        Schema database. Verificar:
-        - Índices em colunas frequentemente filtradas.
-        - Unique constraints onde aplicável.
-        - Relations com onDelete coerente.
-        - Tipos apropriados (não usar String pra ID quando UUID/Int fazem sentido).
-
-    - path: "**/Dockerfile*"
-      instructions: |
-        Dockerfile. Verificar:
-        - Multi-stage quando build é separado de runtime.
-        - User não-root no runtime.
-        - HEALTHCHECK configurado.
-        - Sem segredos hardcoded.
-        - Versão da base image fixada (não latest).
-        - .dockerignore presente pra reduzir contexto.
-
-    - path: "**/.github/workflows/**"
-      instructions: |
-        GitHub Actions. Verificar:
-        - Secrets via ${{ secrets.* }}, nunca hardcoded.
-        - Concurrency group pra evitar runs duplicados.
-        - Permissions explicitas (preferir least privilege).
-        - actions/checkout@vX com versão fixa ou SHA.
-        - Cache strategy não vaza dependências privadas.
-
-    - path: "**/*.env.example"
-      instructions: |
-        Env example. Verificar:
-        - APENAS placeholders, nunca valores reais.
-        - Sem project-refs reais (Supabase, Firebase, etc).
-        - Documentação clara de onde obter cada chave.
-        - Variáveis NEXT_PUBLIC_* / VITE_* / REACT_APP_* só pra valores PÚBLICOS.
-
-    - path: "**/package.json"
-      instructions: |
-        package.json. Verificar:
-        - Sem dependências desnecessárias (sugerir devDeps quando aplicável).
-        - Scripts não expõem secrets.
-        - Sem versões "latest" (preferir SemVer explícito).
-
-    - path: "**/requirements*.txt"
-      instructions: |
-        Python requirements. Verificar:
-        - Versões pinadas (==X.Y.Z), não open-ended.
-        - Sem pacotes obsoletos com CVEs conhecidos.
-
-    - path: "**/pubspec.yaml"
-      instructions: |
-        Flutter pubspec. Verificar:
-        - Versões SDK e Flutter especificadas.
-        - Dependências sem ^ aberto demais.
-        - Sem assets bloated.
-
-    - path: "**/*.md"
-      instructions: |
-        Documentação. Verificar:
-        - Linguagem clara em pt-BR ou en consistente no arquivo.
-        - Exemplos de código funcionam (sintaxe correta).
-        - Links não quebrados (relative ou absolute consistentes).
-        - Sem em dashes (usar hífens).
-        - "Goiânia" sempre com acento se mencionada.
+        Apenas placeholders, NUNCA valores reais. Sem project-refs reais do Supabase.
 
   path_filters:
-    # Build artifacts
     - "!**/node_modules/**"
     - "!**/dist/**"
     - "!**/build/**"
-    - "!**/.next/**"
-    - "!**/.nuxt/**"
-    - "!**/.svelte-kit/**"
-    - "!**/.output/**"
-    - "!**/.cache/**"
-    - "!**/coverage/**"
-    # Lockfiles
-    - "!**/package-lock.json"
-    - "!**/yarn.lock"
-    - "!**/pnpm-lock.yaml"
-    - "!**/poetry.lock"
-    - "!**/Pipfile.lock"
-    - "!**/Cargo.lock"
-    - "!**/composer.lock"
-    # Minified
     - "!**/*.min.js"
     - "!**/*.min.css"
-    - "!**/*.bundle.*"
-    - "!**/*.generated.*"
-    # Snapshots/cache
+    - "!**/*.lock"
+    - "!**/package-lock.json"
+    - "!**/pnpm-lock.yaml"
     - "!**/*.snap"
-    - "!**/__pycache__/**"
-    - "!**/.pytest_cache/**"
-    - "!**/.mypy_cache/**"
-    - "!**/.ruff_cache/**"
-    # DB/local
-    - "!**/*.db"
-    - "!**/*.sqlite"
-    - "!**/*.sqlite3"
-    # Env files (sempre proteger)
-    - "!**/.env"
-    - "!**/.env.local"
-    - "!**/.env.production"
-    - "!**/.env.development"
-    # Binários
     - "!**/*.png"
     - "!**/*.jpg"
     - "!**/*.jpeg"
@@ -195,22 +71,30 @@ reviews:
     - "!**/*.ico"
     - "!**/*.svg"
     - "!**/*.webp"
-    - "!**/*.avif"
     - "!**/*.woff"
     - "!**/*.woff2"
     - "!**/*.ttf"
-    - "!**/*.eot"
     - "!**/*.pdf"
-    - "!**/*.zip"
-    - "!**/*.tar.gz"
-    # Mobile builds
-    - "!**/android/build/**"
-    - "!**/ios/Pods/**"
-    - "!**/*.ipa"
-    - "!**/*.apk"
-    - "!**/*.aab"
-    # Próprio config
     - "!.coderabbit.yaml"
+
+  tools:
+    gitleaks:
+      enabled: true
+    semgrep:
+      enabled: true
+    presidio:
+      enabled: true
+
+knowledge_base:
+  web_search:
+    enabled: true
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - ".github/copilot-instructions.md"
+      - "AGENTS.md"
+  learnings:
+    scope: "local"
 
 chat:
   auto_reply: true
