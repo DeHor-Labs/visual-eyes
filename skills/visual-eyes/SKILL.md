@@ -179,6 +179,14 @@ bash "$HOME/.claude/skills/visual-eyes/scripts/compare.sh" \
   "/tmp/visual-eyes-diff.png"
 ```
 
+For CI, add `--fail-on-diff --max-diff-percent 2` to fail above 2% changed pixels.
+Without those flags comparison remains informational. The positional perceptual
+threshold (default 0.1) is separate from the allowed percentage (default 0).
+Equal to the allowed limit passes. PNG and pixel metrics are emitted before
+exit 1 (regression); exit 2 means invalid input/runtime error, exit 0 completed
+informational comparison or passing gate. Use `--help` for full syntax and
+`docs/ci-comparison.md` in the repository for CI artifact handling.
+
 Then use Read on `/tmp/visual-eyes-diff.png` to see exactly what changed.
 Red pixels indicate modified areas. More red means bigger difference.
 
