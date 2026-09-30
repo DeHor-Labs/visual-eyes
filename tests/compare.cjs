@@ -46,6 +46,13 @@ test('dimension mismatch',()=>run(png('size.png',0,11),[],2));
 test('invalid PNG',()=>{const f=path.join(dir,'bad.png');fs.writeFileSync(f,'bad');run(f,[],2);});
 test('missing input',()=>run(path.join(dir,'missing'),[],2));
 test('same file',()=>run(before,[],2));
+test('symlink input alias',()=>{const alias=path.join(dir,'symlink.png');fs.symlinkSync(before,alias);run(alias,[],2);});
+test('hardlink output alias preserves input',()=>{
+  const alias=path.join(dir,'hardlink.png');fs.linkSync(before,alias);
+  const original=fs.readFileSync(before);
+  const r=spawnSync('bash',[script,before,one,alias],{encoding:'utf8'});
+  assert.equal(r.status,2);assert.deepEqual(fs.readFileSync(before),original);
+});
 for(const options of [['--bogus'],['--max-diff-percent'],['--max-diff-percent','NaN'],['--max-diff-percent','101'],['--max-diff-percent','-1'],['NaN'],['1.1'],['0.1','extra']]) test('invalid arguments '+options.join(' '),()=>run(equal,options,2));
 test('percentage alone stays informational',()=>run(three,['--max-diff-percent','0']));
 test('unrounded percentage gates',()=>run(one,['--fail-on-diff','--max-diff-percent','0.999'],1));
@@ -55,6 +62,10 @@ test('legacy four positional args',()=>run(one,['0.05']));
 test('exact fractional percent avoids floating point error',()=>{
   const r=spawnSync('bash',[script,png('large-before.png',0,1000),png('fraction.png',57,1000),path.join(dir,'fraction-diff.png'),'--fail-on-diff','--max-diff-percent','0.57'],{encoding:'utf8'});
   assert.equal(r.status,0,r.stdout+r.stderr);
+  assert(r.stdout.includes('57 / 10000'));
+  const lower=spawnSync('bash',[script,path.join(dir,'large-before.png'),path.join(dir,'fraction.png'),path.join(dir,'fraction-diff.png'),'--fail-on-diff','--max-diff-percent','0.569999'],{encoding:'utf8'});
+  assert.equal(lower.status,1,lower.stdout+lower.stderr);
 });
-test('help without dependencies',()=>{const r=spawnSync('bash',[script,'--help'],{encoding:'utf8'});assert.equal(r.status,0);assert(r.stdout.includes('--fail-on-diff'));assert(r.stdout.includes('--max-diff-percent'));});
+test('help without dependencies',()=>{const bin=path.join(dir,'help-bin');fs.mkdirSync(bin);fs.symlinkSync('/bin/cat',path.join(bin,'cat'));
+  const r=spawnSync('/bin/bash',[script,'--help'],{encoding:'utf8',env:{...process.env,PATH:bin}});assert.equal(r.status,0);assert(r.stdout.includes('--fail-on-diff'));assert(r.stdout.includes('--max-diff-percent'));});
 fs.rmSync(dir,{recursive:true,force:true});process.exitCode=failures?1:0;
