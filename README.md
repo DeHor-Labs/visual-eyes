@@ -192,3 +192,7 @@ MIT - see [LICENSE](LICENSE)
   <br><br>
   <sub>Because AI should see what it builds</sub>
 </p>
+
+## CI pixel comparison
+
+The comparison helper stays informational by default. Use `--fail-on-diff --max-diff-percent 2` to fail when more than 2% of pixels change. See [CI comparison](docs/ci-comparison.md) for arguments, perceptual threshold semantics, exit codes, artifacts and deterministic tests.
