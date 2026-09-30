@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, "repair/**"]
   pull_request:
 
 jobs:
@@ -35,6 +35,12 @@ jobs:
 
       - name: Test compare.sh syntax
         run: bash -n skills/visual-eyes/scripts/compare.sh && echo "compare.sh syntax OK"
+
+      - name: Install pixel comparison test dependencies
+        run: npm install --prefix /tmp/visual-eyes-deps pngjs@7.0.0 pixelmatch@5.3.0 --save=false
+
+      - name: Test deterministic pixel comparison and CI limits
+        run: node tests/compare.cjs
 
   test:
     name: Integration Tests
