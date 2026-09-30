@@ -6,6 +6,9 @@ const {spawnSync} = require('child_process');
 const {PNG} = require('/tmp/visual-eyes-deps/node_modules/pngjs');
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'visual-eyes-test-'));
 const script = process.env.COMPARE_SCRIPT || path.resolve(__dirname, '../skills/visual-eyes/scripts/compare.sh');
+/** Write an opaque white PNG fixture with the requested number of black pixels.
+ * @returns {string} Path to the generated input image.
+ */
 function png(name, changed=0, width=10) {
   const p = new PNG({width, height:10});
   p.data.fill(255);
@@ -18,7 +21,12 @@ const one = png('one.png',1);
 const two = png('two.png',2);
 const three = png('three.png',3);
 let failures = 0;
+/** Run a named assertion group and record failures without stopping later cases. */
 function test(name, fn) {try {fn(); console.log('PASS '+name);}catch(e){failures++;console.log('FAIL '+name+': '+e.message);}}
+/** Compare a fixture against the baseline and assert the expected exit code.
+ * Removes any previous diff so artifact assertions reflect only this invocation.
+ * @returns {{r: object, diff: string}} Process result and expected diff path.
+ */
 function run(after, options=[], code=0) {
   const diff = path.join(dir,'diff.png');fs.rmSync(diff,{force:true});
   const r = spawnSync('bash',[script,before,after,diff,...options],{encoding:'utf8'});
@@ -30,7 +38,10 @@ test('one pixel CI regression creates PNG and metrics',()=>{const {r,diff}=run(o
 test('below 2 percent',()=>run(one,['--fail-on-diff','--max-diff-percent','2']));
 test('exact 2 percent',()=>run(two,['--fail-on-diff','--max-diff-percent','2']));
 test('above 2 percent',()=>run(three,['--fail-on-diff','--max-diff-percent','2'],1));
-test('perceptual threshold distinct',()=>run(one,['1','--fail-on-diff']));
+test('perceptual threshold distinct',()=>{
+  run(one,['1','--fail-on-diff','--max-diff-percent','0']);
+  run(one,['0.1','--fail-on-diff','--max-diff-percent','0'],1);
+});
 test('dimension mismatch',()=>run(png('size.png',0,11),[],2));
 test('invalid PNG',()=>{const f=path.join(dir,'bad.png');fs.writeFileSync(f,'bad');run(f,[],2);});
 test('missing input',()=>run(path.join(dir,'missing'),[],2));

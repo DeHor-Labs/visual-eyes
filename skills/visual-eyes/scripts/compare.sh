@@ -1,5 +1,6 @@
 #!/bin/bash
 # Informational by default; opt into a CI regression gate with --fail-on-diff.
+# Print command syntax, defaults, output behavior, and exit-code semantics.
 usage() {
   cat <<'HELP'
 Uso: compare.sh [opcoes] <antes.png> <depois.png> [diff.png] [threshold]
@@ -13,6 +14,7 @@ PNG and pixel counts are written before a regression exit. Anti-aliasing is excl
 Use -- before positional paths beginning with '-'. Requires Node.js and npm.
 HELP
 }
+# Report an argument or runtime error on stderr and terminate with exit code 2.
 error() { echo "ERRO: $*" >&2; exit 2; }
 FAIL_ON_DIFF=0
 MAX_DIFF_PERCENT=0
