@@ -41,5 +41,9 @@ test('unrounded percentage gates',()=>run(one,['--fail-on-diff','--max-diff-perc
 test('diff cannot overwrite input',()=>{const r=spawnSync('bash',[script,before,equal,before],{encoding:'utf8'});assert.equal(r.status,2);assert(PNG.sync.read(fs.readFileSync(before)));});
 test('flags before positional inputs',()=>{const r=spawnSync('bash',[script,'--fail-on-diff',before,one,path.join(dir,'early.png')],{encoding:'utf8'});assert.equal(r.status,1);});
 test('legacy four positional args',()=>run(one,['0.05']));
+test('exact fractional percent avoids floating point error',()=>{
+  const r=spawnSync('bash',[script,png('large-before.png',0,1000),png('fraction.png',57,1000),path.join(dir,'fraction-diff.png'),'--fail-on-diff','--max-diff-percent','0.57'],{encoding:'utf8'});
+  assert.equal(r.status,0,r.stdout+r.stderr);
+});
 test('help without dependencies',()=>{const r=spawnSync('bash',[script,'--help'],{encoding:'utf8'});assert.equal(r.status,0);assert(r.stdout.includes('--fail-on-diff'));assert(r.stdout.includes('--max-diff-percent'));});
 fs.rmSync(dir,{recursive:true,force:true});process.exitCode=failures?1:0;

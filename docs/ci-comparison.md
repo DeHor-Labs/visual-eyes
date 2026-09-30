@@ -12,7 +12,7 @@ Opt into a regression gate:
 bash skills/visual-eyes/scripts/compare.sh before.png after.png diff.png --fail-on-diff --max-diff-percent 2
 ```
 
-`--fail-on-diff` defaults to zero allowed changed pixels. `--max-diff-percent` accepts a finite decimal from 0 through 100 and only gates when `--fail-on-diff` is enabled. A percentage exactly equal to the limit passes; a greater percentage fails. The comparison uses unrounded counts, even though the displayed percentage has two decimal places.
+`--fail-on-diff` defaults to zero allowed changed pixels. `--max-diff-percent` accepts a finite decimal from 0 through 100 and only gates when `--fail-on-diff` is enabled. A percentage exactly equal to the limit passes; a greater percentage fails. The comparison uses unrounded integer counts and exact decimal limit arithmetic, even though the displayed percentage has two decimal places.
 
 The optional positional `threshold` remains pixelmatch's perceptual sensitivity (0 through 1, default 0.1). It determines which pixels count as changed. It is **not** the tolerated percentage of changed pixels. Anti-aliased differences remain excluded (`includeAA: false`). This gate measures pixelmatch differences, not every differing byte or human judgment of layout correctness.
 

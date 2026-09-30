@@ -78,7 +78,11 @@ try {
   console.log('Threshold perceptual: '+threshold+'; limite percentual: '+limit+'%');
   console.log('Diff salvo: '+diff);
   // Compare unrounded counts; exact equality passes (avoid rounded display decisions).
-  const regression=fail==='1' && changed*100>Number(limit)*total;
+  // Treat the user-supplied decimal as an exact rational, not binary float.
+  const [whole,fraction='']=limit.split('.');
+  const scale=10n**BigInt(fraction.length);
+  const allowed=BigInt((whole || '0')+fraction);
+  const regression=fail==='1' && BigInt(changed)*100n*scale>allowed*BigInt(total);
   console.log(regression ? 'Regressao visual: limite excedido.' : 'Comparacao concluida.');
   process.exitCode=regression?1:0;
 } catch(e) {console.error('ERRO: '+e.message);process.exitCode=2;}
